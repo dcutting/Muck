@@ -1,0 +1,1 @@
+print(Muck().text)
