@@ -21,12 +21,14 @@ class CSVReporter: Reporter {
         }
         let rows = components.map(makeRow)
 
-        let header = "Name,I,A,D,Rating"
+        let header = "Name,FanIn,FanOut,I,Nc,Na,A,D,Rating"
         return ([header] + rows).joined(separator: "\n")
     }
 
     private func makeRow(for component: Component) -> String {
+        let stability = component.stability
+        let abstractness = component.abstractness
         let rating = findRating(distance: component.distance)
-        return "\(component.name),\(component.stability.instability),\(component.abstractness.abstractness),\(component.distance),\(rating)"
+        return "\(component.name),\(stability.fanIn),\(stability.fanOut),\(stability.instability),\(abstractness.numberClasses),\(abstractness.numberAbstracts),\(abstractness.abstractness),\(component.distance),\(rating)"
     }
 }
