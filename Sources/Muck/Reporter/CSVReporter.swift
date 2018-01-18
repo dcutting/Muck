@@ -1,11 +1,17 @@
-class CSVReporter {
+class CSVReporter: Reporter {
 
     enum SortBy {
         case name
         case distance
     }
 
-    func makeReport(for mainSequence: MainSequence, sortBy: SortBy) -> String {
+    private let sortBy: SortBy
+
+    init(sortBy: SortBy) {
+        self.sortBy = sortBy
+    }
+
+    func makeReport(for mainSequence: MainSequence) -> String {
         let components: [Component]
         switch sortBy {
         case .name:

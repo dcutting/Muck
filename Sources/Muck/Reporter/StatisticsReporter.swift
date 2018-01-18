@@ -1,4 +1,4 @@
-class StatisticsReporter {
+class StatisticsReporter: Reporter {
 
     func makeReport(for mainSequence: MainSequence) -> String {
         let distances = mainSequence.distances
