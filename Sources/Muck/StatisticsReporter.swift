@@ -1,7 +1,14 @@
 class StatisticsReporter {
 
     func makeReport(for mainSequence: MainSequence) -> String {
-//        let mean = mainSequence.distances.mean
-        return ""//Mean,\(mean)"
+        let distances = mainSequence.distances
+        guard
+            let mean = distances.mean,
+            let median = distances.median
+            else { return "" }
+        return """
+Mean,\(mean)
+Median,\(median)
+"""
     }
 }

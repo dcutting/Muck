@@ -1,7 +1,9 @@
 class CSVReporter {
 
     func makeReport(for mainSequence: MainSequence) -> String {
-        return mainSequence.components.map(makeRow).joined(separator: "\n")
+        let header = "Name,I,A,D"
+        let rows = mainSequence.components.map(makeRow)
+        return ([header] + rows).joined(separator: "\n")
     }
 
     func makeRow(for component: Component) -> String {
