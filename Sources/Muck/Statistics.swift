@@ -1,3 +1,5 @@
+import Foundation
+
 protocol DoubleConvertible: Numeric {
     func asDouble() -> Double
 }
@@ -77,4 +79,8 @@ func findRating(distance: Double) -> String {
     } else {
         return "D"
     }
+}
+
+func makeRandomUInt() -> UInt {
+    return UInt(arc4random_uniform(20)) + 1
 }
