@@ -1,32 +1,29 @@
 struct MainSequence {
 
     let components: [Component]
+}
 
-    var distances: [Double] {
-        return components.map { $0.mainSequenceDistance }
-    }
+extension MainSequence {
 
-    var count: Int {
-        return components.count
-    }
-
-    var meanDistance: Double? {
+    var mean: Double? {
         return distances.mean
     }
 
-    var medianDistance: Double {
-        guard count > 0 else { return 0.0 }
-        let sorted = distances.sorted()
-        let mid = count / 2
-        if count % 2 == 0 {
-            return (sorted[mid-1] + sorted[mid]) / 2.0
-        }
-        return sorted[mid]
+    var median: Double? {
+        return distances.median
+    }
+
+    var standardDeviation: Double? {
+        return distances.standardDeviation
+    }
+
+    private var distances: [Double] {
+        return components.map { $0.distance }
     }
 }
 
 extension Component {
-    var mainSequenceDistance: Double {
-        return abs(stability.instability + abstractness.abstractness - 1)
+    var distance: Double {
+        return (stability.instability + abstractness.abstractness - 1).magnitude
     }
 }

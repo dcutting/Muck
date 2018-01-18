@@ -1,11 +1,10 @@
 class StatisticsReporter: Reporter {
 
     func makeReport(for mainSequence: MainSequence) -> String {
-        let distances = mainSequence.distances
         guard
-            let mean = distances.mean,
-            let median = distances.median,
-            let standardDeviation = distances.standardDeviation
+            let mean = mainSequence.mean,
+            let median = mainSequence.median,
+            let standardDeviation = mainSequence.standardDeviation
             else { return "" }
         let rating = findRating(distance: mean)
         return """

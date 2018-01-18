@@ -17,7 +17,7 @@ class CSVReporter: Reporter {
         case .name:
             components = mainSequence.components.sorted { $0.name < $1.name }
         case .distance:
-            components = mainSequence.components.sorted { $0.mainSequenceDistance > $1.mainSequenceDistance }
+            components = mainSequence.components.sorted { $0.distance > $1.distance }
         }
         let rows = components.map(makeRow)
 
@@ -26,7 +26,7 @@ class CSVReporter: Reporter {
     }
 
     private func makeRow(for component: Component) -> String {
-        let rating = findRating(distance: component.mainSequenceDistance)
-        return "\(component.name),\(component.stability.instability),\(component.abstractness.abstractness),\(component.mainSequenceDistance),\(rating)"
+        let rating = findRating(distance: component.distance)
+        return "\(component.name),\(component.stability.instability),\(component.abstractness.abstractness),\(component.distance),\(rating)"
     }
 }
