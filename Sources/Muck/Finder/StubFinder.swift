@@ -1,8 +1,5 @@
-protocol ComponentFinder {
-    func find() -> [Component]
-}
+class StubFinder: Finder {
 
-class StubComponentFinder: ComponentFinder {
     func find() -> [Component] {
         return [
             Component(name: "Filters", stability: makeStability(), abstractness: makeAbstractness()),
@@ -13,12 +10,12 @@ class StubComponentFinder: ComponentFinder {
         ]
     }
 
-    func makeAbstractness() -> Abstractness {
+    private func makeAbstractness() -> Abstractness {
         let numberAbstracts = makeRandomUInt()
         return Abstractness(numberClasses: numberAbstracts + makeRandomUInt(), numberAbstracts: numberAbstracts)
     }
 
-    func makeStability() -> Stability {
+    private func makeStability() -> Stability {
         return Stability(fanIn: makeRandomUInt(), fanOut: makeRandomUInt())
     }
 }

@@ -1,4 +1,5 @@
 struct MainSequence {
+
     let components: [Component]
 
     var distances: [Double] {

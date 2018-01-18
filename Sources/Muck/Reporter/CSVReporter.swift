@@ -25,7 +25,7 @@ class CSVReporter: Reporter {
         return ([header] + rows).joined(separator: "\n")
     }
 
-    func makeRow(for component: Component) -> String {
+    private func makeRow(for component: Component) -> String {
         let rating = findRating(distance: component.mainSequenceDistance)
         return "\(component.name),\(component.stability.instability),\(component.abstractness.abstractness),\(component.mainSequenceDistance),\(rating)"
     }
