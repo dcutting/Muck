@@ -11,6 +11,7 @@ let package = Package(
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
+        .package(url: "https://github.com/jpsim/SourceKitten.git", from: "0.18.4")
         // .package(url: /* package url */, from: "1.0.0"),
     ],
     targets: [
@@ -18,7 +19,7 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
             name: "Muck",
-            dependencies: []),
+            dependencies: ["SourceKittenFramework"]),
         .testTarget(
             name: "MuckTests",
             dependencies: ["Muck"]),
