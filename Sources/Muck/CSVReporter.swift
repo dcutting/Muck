@@ -1,12 +1,26 @@
 class CSVReporter {
 
-    func makeReport(for mainSequence: MainSequence) -> String {
-        let header = "Name,I,A,D"
-        let rows = mainSequence.components.map(makeRow)
+    enum SortBy {
+        case name
+        case distance
+    }
+
+    func makeReport(for mainSequence: MainSequence, sortBy: SortBy) -> String {
+        let components: [Component]
+        switch sortBy {
+        case .name:
+            components = mainSequence.components.sorted { $0.name < $1.name }
+        case .distance:
+            components = mainSequence.components.sorted { $0.mainSequenceDistance > $1.mainSequenceDistance }
+        }
+        let rows = components.map(makeRow)
+
+        let header = "Name,I,A,D,Rating"
         return ([header] + rows).joined(separator: "\n")
     }
 
     func makeRow(for component: Component) -> String {
-        return "\(component.name),\(component.stability.instability),\(component.abstractness.abstractness),\(component.mainSequenceDistance)"
+        let rating = findRating(distance: component.mainSequenceDistance)
+        return "\(component.name),\(component.stability.instability),\(component.abstractness.abstractness),\(component.mainSequenceDistance),\(rating)"
     }
 }

@@ -22,5 +22,8 @@ let components: [Component] = [
 ]
 
 let mainSequence = MainSequence(components: components)
-print(CSVReporter().makeReport(for: mainSequence))
+print(CSVReporter().makeReport(for: mainSequence, sortBy: .distance))
 print(StatisticsReporter().makeReport(for: mainSequence))
+
+//[1,2.9,3,4].mean
+//[1,2,3,4].mean
