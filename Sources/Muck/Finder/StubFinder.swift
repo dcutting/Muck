@@ -1,12 +1,12 @@
 class StubFinder: Finder {
 
-    func find() -> [Component] {
+    func find() -> [SourceFile] {
         return [
-            Component(name: "Filters", stability: makeStability(), abstractness: makeAbstractness()),
-            Component(name: "Discovery", stability: makeStability(), abstractness: makeAbstractness()),
-            Component(name: "List", stability: makeStability(), abstractness: makeAbstractness()),
-            Component(name: "Detail", stability: makeStability(), abstractness: makeAbstractness()),
-            Component(name: "Share", stability: makeStability(), abstractness: makeAbstractness()),
+//            Component(name: "Filters", stability: makeStability(), abstractness: makeAbstractness()),
+//            Component(name: "Discovery", stability: makeStability(), abstractness: makeAbstractness()),
+//            Component(name: "List", stability: makeStability(), abstractness: makeAbstractness()),
+//            Component(name: "Detail", stability: makeStability(), abstractness: makeAbstractness()),
+//            Component(name: "Share", stability: makeStability(), abstractness: makeAbstractness()),
         ]
     }
 

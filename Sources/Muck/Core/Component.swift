@@ -1,5 +1,5 @@
 struct Component {
     let name: String
-    let stability: Stability
-    let abstractness: Abstractness
+    var stability: Stability
+    var abstractness: Abstractness
 }
