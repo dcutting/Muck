@@ -28,7 +28,7 @@ class CSVReporter: Reporter {
     private func makeRow(for component: Component) -> String {
         let stability = component.stability
         let abstractness = component.abstractness
-        let rating = findRating(distance: component.distance)
+        let rating = calculateRating(distance: component.distance)
         return "\(component.name),\(stability.fanIn),\(stability.fanOut),\(stability.instability),\(abstractness.numberClasses),\(abstractness.numberAbstracts),\(abstractness.abstractness),\(component.distance),\(rating)"
     }
 }

@@ -14,7 +14,7 @@ struct Abstractness {
         numberClasses += 1
     }
 
-    mutating func addNonAbstract() {
+    mutating func addConcrete() {
         numberClasses += 1
     }
 }

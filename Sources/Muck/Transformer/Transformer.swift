@@ -8,18 +8,18 @@ class Transformer {
 
     var fanOuts = [String: Set<String>]()
 
-    func transform(sourceFiles: [SourceFile]) -> [Component] {
+    func transform(files: [SourceFile]) -> [Component] {
 
-        partitionDeclarations(from: sourceFiles)
-        tallyReferences(for: sourceFiles)
+        partitionDeclarations(from: files)
+        tallyReferences(for: files)
 
         print(components)
         return Array(components.values)
     }
 
-    private func partitionDeclarations(from sourceFiles: [SourceFile]) {
+    private func partitionDeclarations(from files: [SourceFile]) {
 
-        for file in sourceFiles {
+        for file in files {
             print(file)
             let componentID = findComponentID(for: file)
             for decl in file.declarations {
@@ -28,7 +28,7 @@ class Transformer {
                 if decl.kind.contains(".protocol") {    // todo should we include non-public things
                     component.abstractness.addAbstract()
                 } else {
-                    component.abstractness.addNonAbstract()
+                    component.abstractness.addConcrete()
                 }
                 components[componentID] = component
             }
@@ -56,7 +56,7 @@ class Transformer {
                 outs.insert(ref.usr)
                 var srcComponent = findComponent(for: srcComponentID)
                 fanOuts[srcComponentID] = outs
-                srcComponent.stability.addFanOut()  // todo don't count same ref twice
+                srcComponent.stability.addFanOut()
                 components[srcComponentID] = srcComponent
                 if let dst = dstComponentID {
                     var component = findComponent(for: dst)

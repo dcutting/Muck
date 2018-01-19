@@ -1,9 +1,13 @@
-let componentFinder = SourceKittenFinder()
-let sourceFiles = componentFinder.find()
+let finder = SourceKittenFinder()
 let transformer = Transformer()
-let mainSequence = MainSequence(components: transformer.transform(sourceFiles: sourceFiles))
+
+let files = finder.find()
+let components = transformer.transform(files: files)
+
+let mainSequence = MainSequence(components: components)
+
 let reporter = CompoundReporter(reporters: [
-        CSVReporter(sortBy: .distance),
-        StatisticsReporter()
-    ])
+    CSVReporter(sortBy: .distance),
+    StatisticsReporter()
+])
 print(reporter.makeReport(for: mainSequence))

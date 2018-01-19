@@ -6,7 +6,7 @@ class StatisticsReporter: Reporter {
             let median = mainSequence.median,
             let standardDeviation = mainSequence.standardDeviation
             else { return "" }
-        let rating = findRating(distance: mean)
+        let rating = calculateRating(distance: median)
         return """
 Mean,\(mean)
 Median,\(median)

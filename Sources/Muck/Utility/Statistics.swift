@@ -1,5 +1,3 @@
-import Foundation
-
 protocol DoubleConvertible: Numeric {
     func asDouble() -> Double
 }
@@ -67,20 +65,4 @@ extension Float: DoubleConvertible {
     func asDouble() -> Double {
         return Double(self)
     }
-}
-
-func findRating(distance: Double) -> String {
-    if distance < 0.1 {
-        return "A"
-    } else if distance < 0.3 {
-        return "B"
-    } else if distance < 0.5 {
-        return "C"
-    } else {
-        return "D"
-    }
-}
-
-func makeRandomUInt() -> UInt {
-    return UInt(arc4random_uniform(20)) + 1
 }
