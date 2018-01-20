@@ -1,5 +1,5 @@
 let finder = SourceKittenFinder()
-let transformer = Transformer(granularity: .module)
+let transformer = Transformer(granularity: .folder)
 
 let files = finder.find()
 let components = transformer.transform(files: files)
