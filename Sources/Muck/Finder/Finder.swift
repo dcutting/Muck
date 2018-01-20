@@ -6,7 +6,8 @@ struct Entity {
     let usr: EntityID
 
     var isAbstract: Bool {
-        return kind.contains(".protocol") // todo shouldn't include non-public things
+        // todo should protocol extensions also be considered abstract?
+        return kind.contains(".protocol") // todo shouldn't include non-public things?
     }
 }
 
