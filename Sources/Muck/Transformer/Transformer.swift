@@ -10,7 +10,6 @@ class Transformer {
 
     private var components = [ComponentID: Component]()
     private var declarations = [EntityID: ComponentID]()
-    private var fanOuts = [ComponentID: Set<EntityID>]()
 
     init(granularity: ComponentGranularity) {
         self.granularity = granularity
@@ -27,7 +26,6 @@ class Transformer {
     private func reset() {
         components.removeAll()
         declarations.removeAll()
-        fanOuts.removeAll()
     }
 
     private func registerDeclarations(for files: [SourceFile]) {
@@ -68,18 +66,13 @@ class Transformer {
 
                 guard srcComponentID != dstComponentID else { continue }
 
-                var outs = fanOuts[srcComponentID, default: Set<String>()]
-                guard !outs.contains(reference.usr) else { continue }
-                outs.insert(reference.usr)
-                fanOuts[srcComponentID] = outs
-
                 var srcComponent = findComponent(for: srcComponentID)
-                srcComponent.stability.addFanOut()
+                srcComponent.stability.addDependency(reference.usr)
                 components[srcComponentID] = srcComponent
 
                 if let dst = dstComponentID {
                     var dstComponent = findComponent(for: dst)
-                    dstComponent.stability.addFanIn()
+                    dstComponent.stability.addDependent(srcComponentID)
                     components[dst] = dstComponent
                 } // else external declaration
             }
