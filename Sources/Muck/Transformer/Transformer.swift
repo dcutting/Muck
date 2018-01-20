@@ -2,30 +2,34 @@ import Foundation
 
 class Transformer {
 
-    var components = [String: Component]()
+    enum ComponentGranularity {
+        case module
+        case folder
+    }
+    private let granularity: ComponentGranularity
 
-    var decls = [String: String]()
+    private var components = [ComponentID: Component]()
+    private var declarations = [EntityID: ComponentID]()
+    private var fanOuts = [ComponentID: Set<EntityID>]()
 
-    var fanOuts = [String: Set<String>]()
+    init(granularity: ComponentGranularity) {
+        self.granularity = granularity
+    }
 
     func transform(files: [SourceFile]) -> [Component] {
-
-        partitionDeclarations(from: files)
+        partitionDeclarations(for: files)
         tallyReferences(for: files)
-
-        print(components)
         return Array(components.values)
     }
 
-    private func partitionDeclarations(from files: [SourceFile]) {
+    private func partitionDeclarations(for files: [SourceFile]) {
 
         for file in files {
-            print(file)
             let componentID = findComponentID(for: file)
-            for decl in file.declarations {
-                decls[decl.usr] = componentID
+            for declaration in file.declarations {
+                declarations[declaration.usr] = componentID
                 var component = findComponent(for: componentID)
-                if decl.kind.contains(".protocol") {    // todo should we include non-public things
+                if declaration.kind.contains(".protocol") {    // todo should we include non-public things
                     component.abstractness.addAbstract()
                 } else {
                     component.abstractness.addConcrete()
@@ -36,9 +40,13 @@ class Transformer {
     }
 
     private func findComponentID(for file: SourceFile) -> String {
-        let url = URL(fileURLWithPath: file.path)
-        return url.deletingLastPathComponent().absoluteString
-//        return file.module
+        switch granularity {
+        case .module:
+            return file.module
+        case .folder:
+            let url = URL(fileURLWithPath: file.path)
+            return url.deletingLastPathComponent().absoluteString
+        }
     }
 
     private func tallyReferences(for sourceFiles: [SourceFile]) {
@@ -46,7 +54,7 @@ class Transformer {
         for file in sourceFiles {
             for ref in file.references {
                 let srcComponentID = findComponentID(for: file)
-                let dstComponentID = decls[ref.usr]
+                let dstComponentID = declarations[ref.usr]
 
                 guard srcComponentID != dstComponentID else { continue }
 

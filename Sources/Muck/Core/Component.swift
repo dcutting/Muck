@@ -1,3 +1,5 @@
+typealias ComponentID = String
+
 struct Component {
     let name: String
     var stability: Stability

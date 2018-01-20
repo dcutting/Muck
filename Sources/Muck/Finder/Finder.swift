@@ -1,7 +1,9 @@
+typealias EntityID = String
+
 struct Entity {
     let name: String
     let kind: String
-    let usr: String
+    let usr: EntityID
 }
 
 struct SourceFile {
