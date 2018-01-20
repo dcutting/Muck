@@ -23,6 +23,7 @@ struct Stability {
     }
 
     mutating func addDependent(_ componentID: ComponentID, entityID: EntityID) {
+        guard !fanIns.contains(where: { $0.0 == componentID && $0.1 == entityID }) else { return }
         fanIns.append((componentID, entityID))
     }
 }

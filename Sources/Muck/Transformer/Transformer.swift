@@ -49,9 +49,9 @@ class Transformer {
     private func analyseAbstractness(for declaration: Entity, componentID: ComponentID) {
         var component = findComponent(for: componentID)
         if declaration.isAbstract {
-            component.abstractness.addAbstract()
+            component.abstractness.addAbstract(declaration.name)
         } else {
-            component.abstractness.addConcrete()
+            component.abstractness.addConcrete(declaration.name)
         }
         components[componentID] = component
     }

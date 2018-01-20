@@ -1,7 +1,15 @@
 struct Abstractness {
 
-    var numberClasses: UInt = 0
-    var numberAbstracts: UInt = 0
+    var abstracts = [String]()
+    var concretes = [String]()
+
+    var numberClasses: Int {
+        return numberAbstracts + concretes.count
+    }
+
+    var numberAbstracts: Int {
+        return abstracts.count
+    }
 
     var abstractness: Double {
         precondition(numberClasses >= numberAbstracts, "numberClasses < numberAbstracts")
@@ -9,12 +17,11 @@ struct Abstractness {
         return Double(numberAbstracts) / Double(numberClasses)
     }
 
-    mutating func addAbstract() {
-        numberAbstracts += 1
-        numberClasses += 1
+    mutating func addAbstract(_ name: String) {
+        abstracts.append(name)
     }
 
-    mutating func addConcrete() {
-        numberClasses += 1
+    mutating func addConcrete(_ name: String) {
+        concretes.append(name)
     }
 }
