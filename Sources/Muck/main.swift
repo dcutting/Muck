@@ -7,7 +7,7 @@ let components = transformer.transform(files: files)
 let mainSequence = MainSequence(components: components)
 
 let reporter = CompoundReporter(reporters: [
-    DependencyReporter(),
+    StabilityReporter(),
     CSVReporter(sortBy: .distance),
     StatisticsReporter()
 ])
