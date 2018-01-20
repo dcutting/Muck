@@ -1,6 +1,6 @@
 struct Stability {
 
-    private var fanIns = [ComponentID]()
+    private var fanIns = [(ComponentID, EntityID)]()
     private var fanOuts = Set<EntityID>()
 
     var fanIn: Int {
@@ -21,7 +21,7 @@ struct Stability {
         fanOuts.insert(entityID)
     }
 
-    mutating func addDependent(_ componentID: ComponentID) {
-        fanIns.append(componentID)
+    mutating func addDependent(_ componentID: ComponentID, entityID: EntityID) {
+        fanIns.append((componentID, entityID))
     }
 }

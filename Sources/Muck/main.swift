@@ -3,6 +3,7 @@ let transformer = Transformer(granularity: .folder)
 
 let files = finder.find()
 let components = transformer.transform(files: files)
+print(components)
 
 let mainSequence = MainSequence(components: components)
 

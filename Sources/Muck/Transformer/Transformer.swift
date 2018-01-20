@@ -62,17 +62,20 @@ class Transformer {
             let srcComponentID = findComponentID(for: file)
 
             for reference in file.references {
-                let dstComponentID = declarations[reference.usr]
+
+                let entityID = reference.usr
+
+                let dstComponentID = declarations[entityID]
 
                 guard srcComponentID != dstComponentID else { continue }
 
                 var srcComponent = findComponent(for: srcComponentID)
-                srcComponent.stability.addDependency(reference.usr)
+                srcComponent.stability.addDependency(entityID)
                 components[srcComponentID] = srcComponent
 
                 if let dst = dstComponentID {
                     var dstComponent = findComponent(for: dst)
-                    dstComponent.stability.addDependent(srcComponentID)
+                    dstComponent.stability.addDependent(srcComponentID, entityID: entityID)
                     components[dst] = dstComponent
                 } // else external declaration
             }
