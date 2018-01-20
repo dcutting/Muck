@@ -69,15 +69,16 @@ class Transformer {
 
                 guard srcComponentID != dstComponentID else { continue }
 
-                var srcComponent = findComponent(for: srcComponentID)
-                srcComponent.stability.addDependency(entityID)
-                components[srcComponentID] = srcComponent
-
+                var dstComponent: Component?
                 if let dst = dstComponentID {
-                    var dstComponent = findComponent(for: dst)
-                    dstComponent.stability.addDependent(srcComponentID, entityID: entityID)
+                    dstComponent = findComponent(for: dst)
+                    dstComponent?.stability.addDependent(srcComponentID, entityID: entityID)
                     components[dst] = dstComponent
                 } // else external declaration
+
+                var srcComponent = findComponent(for: srcComponentID)
+                srcComponent.stability.addDependency(entityID, componentID: dstComponentID, name: reference.name)
+                components[srcComponentID] = srcComponent
             }
         }
     }

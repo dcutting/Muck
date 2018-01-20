@@ -8,7 +8,9 @@ class DependencyReporter: Reporter {
 
             lines.append("\(component.name)")
             for dependency in component.stability.fanOuts {
-                lines.append("  - \(dependency)")
+                let componentName = dependency.value.0 ?? "<extern>"
+                let typeName = dependency.value.1 ?? dependency.key
+                lines.append("  - \(componentName).\(typeName)")
             }
         }
 

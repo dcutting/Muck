@@ -1,7 +1,7 @@
 struct Stability {
 
     var fanIns = [(ComponentID, EntityID)]()
-    var fanOuts = Set<EntityID>()
+    var fanOuts = [EntityID: (ComponentID?, String?)]()
 
     var fanIn: Int {
         return fanIns.count
@@ -17,8 +17,9 @@ struct Stability {
         return Double(fanOut) / Double(fanTotal)
     }
 
-    mutating func addDependency(_ entityID: EntityID) {
-        fanOuts.insert(entityID)
+    mutating func addDependency(_ entityID: EntityID, componentID: ComponentID?, name: String?) {
+        guard nil == fanOuts[entityID] else { return }
+        fanOuts[entityID] = (componentID, name)
     }
 
     mutating func addDependent(_ componentID: ComponentID, entityID: EntityID) {
