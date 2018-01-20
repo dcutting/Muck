@@ -1,7 +1,7 @@
 struct Stability {
 
-    private var fanIns = [(ComponentID, EntityID)]()
-    private var fanOuts = Set<EntityID>()
+    var fanIns = [(ComponentID, EntityID)]()
+    var fanOuts = Set<EntityID>()
 
     var fanIn: Int {
         return fanIns.count
