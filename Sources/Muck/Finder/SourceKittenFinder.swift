@@ -48,9 +48,16 @@ class SourceKittenFinder: Finder {
         //            "source.lang.swift.ref.var.local"
     ]
 
+    let path: String
+    let modules: [String]
+
+    init(path: String, modules: [String]) {
+        self.path = path
+        self.modules = modules
+    }
+
     func find() -> [SourceFile] {
-        let path = "/Users/dcutting/Dropbox/Dan/Code/Gloop"
-        return analyse(path: path, modules: ["Gloop", "Barbaloot"])
+        return analyse(path: path, modules: modules)
     }
 
     private func analyse(path: String, modules: [String]) -> [SourceFile] {

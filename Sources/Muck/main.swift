@@ -1,4 +1,4 @@
-let finder = SourceKittenFinder()
+let finder = SourceKittenFinder(path: "/Users/dcutting/Dropbox/Dan/Code/Gloop", modules: ["Gloop", "Barbaloot"])
 let transformer = Transformer(granularity: .module)
 
 let files = finder.find()
