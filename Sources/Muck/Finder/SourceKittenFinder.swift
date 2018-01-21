@@ -49,34 +49,29 @@ class SourceKittenFinder: Finder {
     ]
 
     func find() -> [SourceFile] {
-
-        var sourceFiles = [SourceFile]()
-        sourceFiles.append(contentsOf: gloop())
-        sourceFiles.append(contentsOf: barbaloot())
-
-        return sourceFiles
+        let path = "/Users/dcutting/Dropbox/Dan/Code/Gloop"
+        return analyse(path: path, modules: ["Gloop", "Barbaloot"])
     }
 
-    private func gloop() -> [SourceFile] {
+    private func analyse(path: String, modules: [String]) -> [SourceFile] {
 
-        let modulePath = "/Users/dcutting/Dropbox/Dan/Code/Gloop"
-        let moduleName = "Gloop"
-        guard let module = Module(xcodeBuildArguments: [], name: moduleName, inPath: modulePath) else { preconditionFailure() }
-
-        let schlopp = makeSourceFile(for: "/Users/dcutting/Dropbox/Dan/Code/Gloop/Gloop/Schlopp/Schlopp.swift", module: moduleName, arguments: module.compilerArguments)
-        let thneed = makeSourceFile(for: "/Users/dcutting/Dropbox/Dan/Code/Gloop/Gloop/Schlopp/Thneed.swift", module: moduleName, arguments: module.compilerArguments)
-        let thing = makeSourceFile(for: "/Users/dcutting/Dropbox/Dan/Code/Gloop/Gloop/Thing.swift", module: moduleName, arguments: module.compilerArguments)
-        return [schlopp, thneed, thing].flatMap { $0 }
+        let sourceFiles = modules.map { module in
+            analyse(path: path, module: module)
+        }
+        return Array(sourceFiles.joined())
     }
 
-    private func barbaloot() -> [SourceFile] {
+    private func analyse(path: String, module: String) -> [SourceFile] {
 
-        let modulePath = "/Users/dcutting/Dropbox/Dan/Code/Gloop"
-        let moduleName = "Barbaloot"
-        guard let module = Module(xcodeBuildArguments: [], name: moduleName, inPath: modulePath) else { preconditionFailure() }
+        guard let module = Module(xcodeBuildArguments: [], name: module, inPath: path) else { preconditionFailure() }
 
-        let sourceFile = makeSourceFile(for: "/Users/dcutting/Dropbox/Dan/Code/Gloop/Barbaloot/Bear.swift", module: moduleName, arguments: module.compilerArguments)
-        return [sourceFile].flatMap { $0 }
+        printStdErr("Analysing module \(module.name)")
+        let source = module.sourceFiles
+        let sourceFiles = source.map { file -> SourceFile? in
+            printStdErr("  - \(file)")
+            return makeSourceFile(for: file, module: module.name, arguments: module.compilerArguments)
+        }
+        return sourceFiles.flatMap { $0 }
     }
 
     private func makeSourceFile(for file: String, module: String, arguments: [String]) -> SourceFile? {
@@ -116,7 +111,5 @@ class SourceKittenFinder: Finder {
         }
 
         return (declarations, references)
-
-//        print(toJSON(r))
     }
 }
