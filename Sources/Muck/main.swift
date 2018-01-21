@@ -24,9 +24,9 @@ catch let error {
     print(error.localizedDescription)
 }
 
-func start(path: String, modules: [String], granularity: Transformer.ComponentGranularity) {
+func start(path: String, xcodeBuildArguments: [String], modules: [String], granularity: Transformer.ComponentGranularity) {
 
-    let finder = SourceKittenFinder(path: path, modules: modules)
+    let finder = SourceKittenFinder(path: path, xcodeBuildArguments: xcodeBuildArguments, modules: modules)
     let transformer = Transformer(granularity: granularity)
 
     let files = finder.find()
@@ -47,7 +47,8 @@ if let modules = parsedModules {
     let path = parsedPath ?? currentWorkingDirectory.asString
     let byFolder = parsedByFolder ?? false
     let granularity: Transformer.ComponentGranularity = byFolder ? .folder : .module
-    start(path: path, modules: modules, granularity: granularity)
+    let xcodeBuildArguments = ["-workspace","Remix.xcworkspace","-scheme","Marketplace"]
+    start(path: path, xcodeBuildArguments: xcodeBuildArguments, modules: modules, granularity: granularity)
 } else {
     parser.printUsage(on: stdoutStream)
 }

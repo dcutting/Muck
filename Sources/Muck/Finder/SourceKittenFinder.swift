@@ -49,28 +49,30 @@ class SourceKittenFinder: Finder {
     ]
 
     let path: String
+    let xcodeBuildArguments: [String]
     let modules: [String]
 
-    init(path: String, modules: [String]) {
+    init(path: String, xcodeBuildArguments: [String], modules: [String]) {
         self.path = path
+        self.xcodeBuildArguments = xcodeBuildArguments
         self.modules = modules
     }
 
     func find() -> [SourceFile] {
-        return analyse(path: path, modules: modules)
+        return analyse(path: path, xcodeBuildArguments: xcodeBuildArguments, modules: modules)
     }
 
-    private func analyse(path: String, modules: [String]) -> [SourceFile] {
+    private func analyse(path: String, xcodeBuildArguments: [String], modules: [String]) -> [SourceFile] {
 
         let sourceFiles = modules.map { module in
-            analyse(path: path, module: module)
+            analyse(path: path, xcodeBuildArguments: xcodeBuildArguments, module: module)
         }
         return Array(sourceFiles.joined())
     }
 
-    private func analyse(path: String, module: String) -> [SourceFile] {
+    private func analyse(path: String, xcodeBuildArguments: [String], module: String) -> [SourceFile] {
 
-        guard let module = Module(xcodeBuildArguments: [], name: module, inPath: path) else { preconditionFailure() }
+        guard let module = Module(xcodeBuildArguments: xcodeBuildArguments, name: module, inPath: path) else { preconditionFailure() }
 
         printStdErr("Analysing module \(module.name)")
         let source = module.sourceFiles
