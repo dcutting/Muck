@@ -8,14 +8,22 @@ let pathArg: OptionArgument<String> = parser.add(option: "--projectPath", shortN
 let modulesArg: OptionArgument<[String]> = parser.add(option: "--modules", shortName: "-m", kind: [String].self, usage: "The Swift modules to analyse (required)")
 let byFolderArg: OptionArgument<Bool> = parser.add(option: "--byFolder", shortName: "-f", kind: Bool.self, usage: "Treat folders as components (defaults to modules)")
 
+//let xcodeParser = parser.add(subparser: "xcode", overview: "Xcode build arguments")
+let workspaceArg: OptionArgument<String> = parser.add(option: "--workspace", shortName: "-w", kind: String.self, usage: "The Xcode workspace")
+let schemeArg: OptionArgument<String> = parser.add(option: "--scheme", shortName: "-s", kind: String.self, usage: "The Xcode scheme")
+
 var parsedPath: String?
 var parsedModules: [String]?
 var parsedByFolder: Bool?
+var parsedWorkspace: String?
+var parsedScheme: String?
 do {
     let parsedArguments = try parser.parse(arguments)
     parsedPath = parsedArguments.get(pathArg)
     parsedModules = parsedArguments.get(modulesArg)
     parsedByFolder = parsedArguments.get(byFolderArg)
+    parsedWorkspace = parsedArguments.get(workspaceArg)
+    parsedScheme = parsedArguments.get(schemeArg)
 }
 catch let error as ArgumentParserError {
     print(error.description)
@@ -47,7 +55,13 @@ if let modules = parsedModules {
     let path = parsedPath ?? currentWorkingDirectory.asString
     let byFolder = parsedByFolder ?? false
     let granularity: Transformer.ComponentGranularity = byFolder ? .folder : .module
-    let xcodeBuildArguments = ["-workspace","Remix.xcworkspace","-scheme","Marketplace"]
+    var xcodeBuildArguments = [String]()
+    if let workspace = parsedWorkspace {
+        xcodeBuildArguments.append(contentsOf: ["-workspace", workspace])
+    }
+    if let scheme = parsedScheme {
+        xcodeBuildArguments.append(contentsOf: ["-scheme", scheme])
+    }
     start(path: path, xcodeBuildArguments: xcodeBuildArguments, modules: modules, granularity: granularity)
 } else {
     parser.printUsage(on: stdoutStream)
