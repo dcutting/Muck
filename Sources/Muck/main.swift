@@ -4,13 +4,12 @@ import Utility
 
 let arguments = Array(ProcessInfo.processInfo.arguments.dropFirst())
 let parser = ArgumentParser(usage: "<options>", overview: "A dependency analyser for Swift projects")
-let modulesArg: OptionArgument<[String]> = parser.add(option: "--modules", shortName: "-m", kind: [String].self, usage: "The Swift modules to analyse (required)")
-let byFolderArg: OptionArgument<Bool> = parser.add(option: "--byFolder", shortName: "-f", kind: Bool.self, usage: "Treat folders as components (defaults to modules)")
-
-let workspaceArg: OptionArgument<String> = parser.add(option: "--workspace", shortName: "-w", kind: String.self, usage: "The Xcode workspace")
-let schemeArg: OptionArgument<String> = parser.add(option: "--scheme", shortName: "-s", kind: String.self, usage: "The Xcode scheme")
-let projectArg: OptionArgument<String> = parser.add(option: "--project", shortName: "-p", kind: String.self, usage: "The Xcode project")
-let targetArg: OptionArgument<String> = parser.add(option: "--target", shortName: "-t", kind: String.self, usage: "The Xcode target")
+let workspaceArg: OptionArgument<String> = parser.add(option: "--workspace", shortName: "-w", kind: String.self, usage: "The Xcode workspace (specify either workspace or project but not both)")
+let projectArg: OptionArgument<String> = parser.add(option: "--project", shortName: "-p", kind: String.self, usage: "The Xcode project (specify either workspace or project but not both)")
+let schemeArg: OptionArgument<String> = parser.add(option: "--scheme", shortName: "-s", kind: String.self, usage: "The Xcode scheme (required if workspace is specified)")
+let targetArg: OptionArgument<String> = parser.add(option: "--target", shortName: "-t", kind: String.self, usage: "The Xcode target (required if project is specified)")
+let modulesArg: OptionArgument<[String]> = parser.add(option: "--modules", shortName: "-m", kind: [String].self, usage: "The modules to analyse (required)")
+let byFolderArg: OptionArgument<Bool> = parser.add(option: "--byFolder", shortName: "-f", kind: Bool.self, usage: "Treat folders as components (by default, modules are treated as components)")
 
 var parsedModules: [String]?
 var parsedByFolder: Bool?
@@ -60,6 +59,10 @@ func start(path: String, xcodeBuildArguments: [String], modules: [String], granu
 }
 
 if let modules = parsedModules {
+    var hasWorkspace = false
+    var hasScheme = false
+    var hasProject = false
+    var hasTarget = false
     var path = ""
     let byFolder = parsedByFolder ?? false
     let granularity: Transformer.ComponentGranularity = byFolder ? .folder : .module
@@ -68,22 +71,40 @@ if let modules = parsedModules {
         xcodeBuildArguments.append(contentsOf: ["-workspace", workspace])
         let workspacePath = URL(fileURLWithPath: workspace)
         path = workspacePath.deletingLastPathComponent().path
+        hasWorkspace = true
     }
     if let scheme = parsedScheme {
         xcodeBuildArguments.append(contentsOf: ["-scheme", scheme])
+        hasScheme = true
     }
     if let project = parsedProject {
         xcodeBuildArguments.append(contentsOf: ["-project", project])
         let projectPath = URL(fileURLWithPath: project)
         path = projectPath.deletingLastPathComponent().path
+        hasProject = true
     }
     if let target = parsedTarget {
         xcodeBuildArguments.append(contentsOf: ["-target", target])
+        hasTarget = true
     }
     print(path)
     print(xcodeBuildArguments)
     print(modules)
     print(granularity)
+
+    if hasWorkspace && hasProject {
+        parser.printUsage(on: stdoutStream)
+        exit(1)
+    }
+    if hasWorkspace && !hasScheme {
+        parser.printUsage(on: stdoutStream)
+        exit(1)
+    }
+    if hasProject && !hasTarget {
+        parser.printUsage(on: stdoutStream)
+        exit(1)
+    }
+
     start(path: path, xcodeBuildArguments: xcodeBuildArguments, modules: modules, granularity: granularity)
 } else {
     parser.printUsage(on: stdoutStream)
