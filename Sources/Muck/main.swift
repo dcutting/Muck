@@ -35,7 +35,7 @@ catch let error {
 
 func start(path: String, xcodeBuildArguments: [String], moduleNames: [String], granularityStrategy: GranularityStrategy, componentNameStrategy: ComponentNameStrategy) {
 
-    let finder = SourceKittenFinder(path: path, xcodeBuildArguments: xcodeBuildArguments, moduleNames: moduleNames)
+    let finder = SourceKittenFinder(path: path, xcodeBuildArguments: xcodeBuildArguments, moduleNames: moduleNames, isVerbose: true)
     let transformer = Transformer(granularityStrategy: granularityStrategy, componentNameStrategy: componentNameStrategy)
 
     do {
