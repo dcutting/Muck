@@ -87,7 +87,7 @@ if let modules = parsedModules {
         xcodeBuildArguments.append(contentsOf: ["-target", target])
         hasTarget = true
     }
-    let componentNameStrategy: ComponentNameStrategy = byFolder ? FilePathComponentNameFactory(rootPath: path + "/") : ModuleComponentNameFactory()
+    let componentNameStrategy: ComponentNameStrategy = byFolder ? FilePathComponentNameStrategy(rootPath: path + "/") : ModuleComponentNameStrategy()
 
     printStdErr(path)
     printStdErr(xcodeBuildArguments.description)

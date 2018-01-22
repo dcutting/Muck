@@ -1,4 +1,4 @@
-class FilePathComponentNameFactory: ComponentNameStrategy {
+class FilePathComponentNameStrategy: ComponentNameStrategy {
 
     private let rootPath: String
 
@@ -6,7 +6,7 @@ class FilePathComponentNameFactory: ComponentNameStrategy {
         self.rootPath = rootPath
     }
 
-    func makeComponentName(for componentID: ComponentID) -> String {
+    func findComponentName(for componentID: ComponentID) -> String {
         let hasPrefix = componentID.hasPrefix(rootPath)
         if hasPrefix {
             return String(componentID.dropFirst(rootPath.count))

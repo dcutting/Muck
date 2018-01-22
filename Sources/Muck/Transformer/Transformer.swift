@@ -90,7 +90,7 @@ class Transformer {
     }
 
     private func makeComponent(for componentID: ComponentID) -> Component {
-        let name = componentNameStrategy.makeComponentName(for: componentID)
+        let name = componentNameStrategy.findComponentName(for: componentID)
         return Component(name: name, stability: Stability(), abstractness: Abstractness())
     }
 }
