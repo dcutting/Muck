@@ -2,18 +2,14 @@ class DependencyReporter: Reporter {
 
     func makeReport(for mainSequence: MainSequence) -> String {
 
-        var lines = [String]()
-
-        for component in mainSequence.components {
-
-            lines.append("\(component.name)")
-            for dependency in component.stability.fanOuts {
+        let components = mainSequence.components.map { component -> [String] in
+            let dependencies = component.stability.fanOuts.map { dependency -> String in
                 let componentName = dependency.value.0 ?? "<extern>"
                 let typeName = dependency.value.1 ?? dependency.key
-                lines.append("  - \(componentName).\(typeName)")
+                return "  - \(componentName).\(typeName)"
             }
+            return ["\(component.name)"] + dependencies
         }
-
-        return lines.joined(separator: "\n")
+        return Array(components.joined()).joined(separator: "\n")
     }
 }
