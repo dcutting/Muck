@@ -2,17 +2,13 @@ import Foundation
 
 class Transformer {
 
-    enum ComponentGranularity {
-        case module
-        case folder
-    }
-    private let granularity: ComponentGranularity
+    private let granularityStrategy: GranularityStrategy
 
     private var components = [ComponentID: Component]()
     private var declarations = [EntityID: ComponentID]()
 
-    init(granularity: ComponentGranularity) {
-        self.granularity = granularity
+    init(granularityStrategy: GranularityStrategy) {
+        self.granularityStrategy = granularityStrategy
     }
 
     func transform(files: [SourceFile]) -> [Component] {
@@ -83,14 +79,8 @@ class Transformer {
         }
     }
 
-    private func findComponentID(for file: SourceFile) -> String {
-        switch granularity {
-        case .module:
-            return file.module
-        case .folder:
-            let url = URL(fileURLWithPath: file.path)
-            return url.deletingLastPathComponent().relativePath
-        }
+    private func findComponentID(for file: SourceFile) -> ComponentID {
+        return granularityStrategy.findComponentID(for: file)
     }
 
     private func findComponent(for componentID: ComponentID) -> Component {

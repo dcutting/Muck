@@ -33,10 +33,10 @@ catch let error {
     printStdErr(error.localizedDescription)
 }
 
-func start(path: String, xcodeBuildArguments: [String], modules: [String], granularity: Transformer.ComponentGranularity) {
+func start(path: String, xcodeBuildArguments: [String], modules: [String], granularityStrategy: GranularityStrategy) {
 
     let finder = SourceKittenFinder(path: path, xcodeBuildArguments: xcodeBuildArguments, modules: modules)
-    let transformer = Transformer(granularity: granularity)
+    let transformer = Transformer(granularityStrategy: granularityStrategy)
 
     do {
         let files = try finder.find()
@@ -65,7 +65,7 @@ if let modules = parsedModules {
     var hasTarget = false
     var path = ""
     let byFolder = parsedByFolder ?? false
-    let granularity: Transformer.ComponentGranularity = byFolder ? .folder : .module
+    let granularityStrategy: GranularityStrategy = byFolder ? FolderGranularityStrategy() : ModuleGranularityStrategy()
     var xcodeBuildArguments = [String]()
     if let workspace = parsedWorkspace {
         xcodeBuildArguments.append(contentsOf: ["-workspace", workspace])
@@ -90,7 +90,7 @@ if let modules = parsedModules {
     printStdErr(path)
     printStdErr(xcodeBuildArguments.description)
     printStdErr(modules.description)
-    printStdErr("\(granularity)")
+    printStdErr(granularityStrategy.description)
 
     if hasWorkspace && hasProject {
         parser.printUsage(on: stderrStream)
@@ -105,7 +105,7 @@ if let modules = parsedModules {
         exit(1)
     }
 
-    start(path: path, xcodeBuildArguments: xcodeBuildArguments, modules: modules, granularity: granularity)
+    start(path: path, xcodeBuildArguments: xcodeBuildArguments, modules: modules, granularityStrategy: granularityStrategy)
 } else {
     parser.printUsage(on: stderrStream)
 }
