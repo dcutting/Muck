@@ -1,7 +1,3 @@
-protocol DoubleConvertible: Numeric {
-    func asDouble() -> Double
-}
-
 extension Sequence where Element: Numeric {
     var sum: Element {
         return reduce(0, +)
@@ -46,23 +42,5 @@ extension Collection where Element: FloatingPoint, IndexDistance == Int {
 extension Int {
     var isEven: Bool {
         return self % 2 == 0
-    }
-}
-
-extension Double: DoubleConvertible {
-    func asDouble() -> Double {
-        return Double(self)
-    }
-}
-
-extension Int: DoubleConvertible {
-    func asDouble() -> Double {
-        return Double(self)
-    }
-}
-
-extension Float: DoubleConvertible {
-    func asDouble() -> Double {
-        return Double(self)
     }
 }
