@@ -1,7 +1,11 @@
 import Foundation
 import SourceKittenFramework
 
-class SourceKittenFinder: Finder {
+enum SourceKittenFinderError: Error {
+    case build(name: String)
+}
+
+class SourceKittenFinder: SourceFileFinder {
 
     let kinds = [
         "source.lang.swift.decl.function.free",
@@ -73,7 +77,7 @@ class SourceKittenFinder: Finder {
     private func analyse(path: String, xcodeBuildArguments: [String], moduleName: String) throws -> [SourceFile] {
 
         guard let module = Module(xcodeBuildArguments: xcodeBuildArguments, name: moduleName, inPath: path) else {
-            throw FinderError.build(name: moduleName)
+            throw SourceKittenFinderError.build(name: moduleName)
         }
 
         printStdErr("Analysing module \(module.name)")
