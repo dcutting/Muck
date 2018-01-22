@@ -55,28 +55,38 @@ class Transformer {
     }
 
     private func analyseStability(for files: [SourceFile]) {
-
         for file in files {
-
-            let sourceComponentID = granularityStrategy.findComponentID(for: file)
-
-            for reference in file.references {
-
-                let destinationComponentID = declarations[reference.entityID]
-
-                guard sourceComponentID != destinationComponentID else { continue }
-
-                if let destinationComponentID = destinationComponentID {
-                    var destinationComponent = findComponent(forID: destinationComponentID)
-                    destinationComponent.references.addDependent(sourceComponentID, entityID: reference.entityID)
-                    components[destinationComponentID] = destinationComponent
-                } // else external declaration
-
-                var sourceComponent = findComponent(forID: sourceComponentID)
-                sourceComponent.references.addDependency(reference.entityID, componentID: destinationComponentID, name: reference.name)
-                components[sourceComponentID] = sourceComponent
-            }
+            analyseStability(for: file)
         }
+    }
+
+    private func analyseStability(for file: SourceFile) {
+
+        let thisComponentID = granularityStrategy.findComponentID(for: file)
+
+        for entity in file.references {
+
+            let dependencyID = entity.entityID
+            let referencedComponentID = declarations[dependencyID]
+
+            guard thisComponentID != referencedComponentID else { continue }
+
+            updateReferenced(componentID: referencedComponentID, withDependency: entity, from: thisComponentID)
+            updateThis(componentID: thisComponentID, withDependency: entity, ownedBy: referencedComponentID)
+        }
+    }
+
+    private func updateReferenced(componentID: ComponentID?, withDependency entity: Entity, from thisComponentID: ComponentID) {
+        guard let referencedID = componentID else { return } // external declaration
+        var referencedComponent = findComponent(forID: referencedID)
+        referencedComponent.references.addDependent(dependentComponentID: thisComponentID, entity: entity)
+        components[referencedID] = referencedComponent
+    }
+
+    private func updateThis(componentID: ComponentID, withDependency entity: Entity, ownedBy referencedComponentID: ComponentID?) {
+        var thisComponent = findComponent(forID: componentID)
+        thisComponent.references.addDependency(entity.entityID, componentID: referencedComponentID, name: entity.name)
+        components[componentID] = thisComponent
     }
 
     private func findComponent(forID componentID: ComponentID) -> Component {

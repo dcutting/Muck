@@ -1,6 +1,20 @@
+struct Dependency: Hashable {
+
+    let dependentComponentID: ComponentID
+    let dependency: EntityID
+
+    var hashValue: Int {
+        return dependentComponentID.hashValue ^ dependency.hashValue
+    }
+
+    static func ==(lhs: Dependency, rhs: Dependency) -> Bool {
+        return lhs.dependentComponentID == rhs.dependentComponentID && lhs.dependency == rhs.dependency
+    }
+}
+
 struct References {
 
-    var dependents = [(ComponentID, EntityID)]()
+    var dependents = [Dependency: Entity]()
     var dependencies = [EntityID: (ComponentID?, String?)]()
 
     var fanIn: Int {
@@ -22,8 +36,8 @@ struct References {
         dependencies[entityID] = (componentID, name)
     }
 
-    mutating func addDependent(_ componentID: ComponentID, entityID: EntityID) {
-        guard !dependents.contains(where: { $0.0 == componentID && $0.1 == entityID }) else { return }
-        dependents.append((componentID, entityID))
+    mutating func addDependent(dependentComponentID: ComponentID, entity: Entity) {
+        let dependency = Dependency(dependentComponentID: dependentComponentID, dependency: entity.entityID)
+        dependents[dependency] = entity
     }
 }
