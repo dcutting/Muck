@@ -80,13 +80,18 @@ class SourceKittenFinder: SourceFileFinder {
     }
 
     private func makeEntity(from sourceKitEntity: [String: SourceKitRepresentable]) -> Entity? {
+
         guard
             let name = sourceKitEntity["key.name"] as? String,
             let usr = sourceKitEntity["key.usr"] as? String,
             let kind = sourceKitEntity["key.kind"] as? String,
             isNonLocal(kind: kind)
             else { return nil }
-        return Entity(name: name, kind: kind, usr: usr)
+
+        let isAbstract = kind.contains(".protocol")
+        let isDeclaration = kind.contains(".decl.")
+
+        return Entity(entityID: usr, name: name, kind: kind, isAbstract: isAbstract, isDeclaration: isDeclaration)
     }
 
     private func isNonLocal(kind: String) -> Bool {

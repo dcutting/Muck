@@ -10,17 +10,11 @@ struct SourceFile {
 }
 
 struct Entity {
+    let entityID: EntityID
     let name: String
     let kind: String
-    let usr: EntityID
-
-    var isAbstract: Bool {
-        return kind.contains(".protocol")
-    }
-
-    var isDeclaration: Bool {
-        return kind.contains(".decl.")
-    }
+    let isAbstract: Bool
+    let isDeclaration: Bool
 }
 
 typealias EntityID = String

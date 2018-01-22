@@ -30,7 +30,7 @@ class Transformer {
         for file in files {
             let componentID = findComponentID(for: file)
             for declaration in file.declarations {
-                declarations[declaration.usr] = componentID
+                declarations[declaration.entityID] = componentID
             }
         }
     }
@@ -61,7 +61,7 @@ class Transformer {
 
             for reference in file.references {
 
-                let entityID = reference.usr
+                let entityID = reference.entityID
 
                 let dstComponentID = declarations[entityID]
 
