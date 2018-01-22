@@ -46,7 +46,7 @@ func start(path: String, xcodeBuildArguments: [String], modules: [String], granu
 
         let reporter = CompoundReporter(reporters: [
             DeclarationReporter(),
-            DependencyReporter(),
+            DependencyReporter(componentNameStrategy: componentNameStrategy),
             ComponentCleanlinessReporter(sortBy: .distance),
             OverallCleanlinessReporter()
             ])
