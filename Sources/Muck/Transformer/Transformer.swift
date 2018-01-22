@@ -28,7 +28,7 @@ class Transformer {
 
     private func registerDeclarations(for files: [SourceFile]) {
         for file in files {
-            let componentID = findComponentID(for: file)
+            let componentID = granularityStrategy.findComponentID(for: file)
             for declaration in file.declarations {
                 declarations[declaration.entityID] = componentID
             }
@@ -37,7 +37,7 @@ class Transformer {
 
     private func analyseAbstractness(for files: [SourceFile]) {
         for file in files {
-            let componentID = findComponentID(for: file)
+            let componentID = granularityStrategy.findComponentID(for: file)
             for declaration in file.declarations {
                 analyseAbstractness(for: declaration, componentID: componentID)
             }
@@ -45,7 +45,7 @@ class Transformer {
     }
 
     private func analyseAbstractness(for declaration: Entity, componentID: ComponentID) {
-        var component = findComponent(for: componentID)
+        var component = findComponent(forID: componentID)
         if declaration.isAbstract {
             component.declarations.addAbstract(declaration.name)
         } else {
@@ -57,39 +57,33 @@ class Transformer {
     private func analyseStability(for files: [SourceFile]) {
 
         for file in files {
-            let srcComponentID = findComponentID(for: file)
+
+            let sourceComponentID = granularityStrategy.findComponentID(for: file)
 
             for reference in file.references {
 
-                let entityID = reference.entityID
+                let destinationComponentID = declarations[reference.entityID]
 
-                let dstComponentID = declarations[entityID]
+                guard sourceComponentID != destinationComponentID else { continue }
 
-                guard srcComponentID != dstComponentID else { continue }
-
-                var dstComponent: Component?
-                if let dst = dstComponentID {
-                    dstComponent = findComponent(for: dst)
-                    dstComponent?.references.addDependent(srcComponentID, entityID: entityID)
-                    components[dst] = dstComponent
+                if let destinationComponentID = destinationComponentID {
+                    var destinationComponent = findComponent(forID: destinationComponentID)
+                    destinationComponent.references.addDependent(sourceComponentID, entityID: reference.entityID)
+                    components[destinationComponentID] = destinationComponent
                 } // else external declaration
 
-                var srcComponent = findComponent(for: srcComponentID)
-                srcComponent.references.addDependency(entityID, componentID: dstComponentID, name: reference.name)
-                components[srcComponentID] = srcComponent
+                var sourceComponent = findComponent(forID: sourceComponentID)
+                sourceComponent.references.addDependency(reference.entityID, componentID: destinationComponentID, name: reference.name)
+                components[sourceComponentID] = sourceComponent
             }
         }
     }
 
-    private func findComponentID(for file: SourceFile) -> ComponentID {
-        return granularityStrategy.findComponentID(for: file)
+    private func findComponent(forID componentID: ComponentID) -> Component {
+        return components[componentID, default: makeComponent(withID: componentID)]
     }
 
-    private func findComponent(for componentID: ComponentID) -> Component {
-        return components[componentID, default: makeComponent(for: componentID)]
-    }
-
-    private func makeComponent(for componentID: ComponentID) -> Component {
+    private func makeComponent(withID componentID: ComponentID) -> Component {
         let name = componentNameStrategy.findComponentName(for: componentID)
         return Component(name: name, declarations: Declarations(), references: References())
     }
