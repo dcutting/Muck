@@ -12,12 +12,13 @@ class ComponentCleanlinessReporter: Reporter {
     }
 
     func makeReport(for mainSequence: MainSequence) -> String {
-        let components: [Component]
-        switch sortBy {
-        case .name:
-            components = mainSequence.components.sorted { $0.name < $1.name }
-        case .distance:
-            components = mainSequence.components.sorted { $0.distance > $1.distance }
+        let components = mainSequence.components.sorted {
+            switch sortBy {
+            case .name:
+                return $0.name < $1.name
+            case .distance:
+                return $0.distance > $1.distance
+            }
         }
         let rows = components.map(makeRow)
 
