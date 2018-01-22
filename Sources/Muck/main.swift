@@ -47,8 +47,8 @@ func start(path: String, xcodeBuildArguments: [String], modules: [String], granu
         let reporter = CompoundReporter(reporters: [
             DeclarationReporter(),
             DependencyReporter(),
-            CSVReporter(sortBy: .distance),
-            StatisticsReporter()
+            ComponentCleanlinessReporter(sortBy: .distance),
+            OverallCleanlinessReporter()
             ])
         print(reporter.makeReport(for: mainSequence))
     } catch FinderError.build(let name) {

@@ -1,4 +1,4 @@
-class StatisticsReporter: Reporter {
+class OverallCleanlinessReporter: Reporter {
 
     func makeReport(for mainSequence: MainSequence) -> String {
         guard

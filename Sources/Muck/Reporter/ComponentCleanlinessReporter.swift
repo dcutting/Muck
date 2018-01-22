@@ -1,4 +1,4 @@
-class CSVReporter: Reporter {
+class ComponentCleanlinessReporter: Reporter {
 
     enum SortBy {
         case name
