@@ -6,8 +6,10 @@ class OverallCleanlinessReporter: Reporter {
             let median = mainSequence.median,
             let standardDeviation = mainSequence.standardDeviation
             else { return "" }
+        let count = mainSequence.components.count
         let rating = calculateRating(distance: median)
         return """
+Count,\(count)
 Mean,\(mean)
 Median,\(median)
 Stddev,\(standardDeviation)
