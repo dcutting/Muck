@@ -14,7 +14,7 @@ class DependencyReporter: Reporter {
                 if let componentID = dependency.value.0 {
                     componentName = componentNameStrategy.findComponentName(for: componentID)
                 }
-                let typeName = dependency.value.1 ?? dependency.key
+                let typeName = dependency.value.1.name
                 return "  - \(componentName).\(typeName)"
             }
             return ["\(component.name)"] + dependencies

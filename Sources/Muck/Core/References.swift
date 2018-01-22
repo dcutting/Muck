@@ -15,7 +15,7 @@ struct Dependency: Hashable {
 struct References {
 
     var dependents = [Dependency: Entity]()
-    var dependencies = [EntityID: (ComponentID?, String?)]()
+    var dependencies = [EntityID: (ComponentID?, Entity)]()
 
     var fanIn: Int {
         return dependents.count
@@ -31,13 +31,12 @@ struct References {
         return Double(fanOut) / Double(fanTotal)
     }
 
-    mutating func addDependency(_ entityID: EntityID, componentID: ComponentID?, name: String?) {
-        guard nil == dependencies[entityID] else { return }
-        dependencies[entityID] = (componentID, name)
+    mutating func addDependency(on entity: Entity, ownedBy componentID: ComponentID?) {
+        dependencies[entity.entityID] = (componentID, entity)
     }
 
-    mutating func addDependent(dependentComponentID: ComponentID, entity: Entity) {
-        let dependency = Dependency(dependentComponentID: dependentComponentID, dependency: entity.entityID)
+    mutating func addDependency(on entity: Entity, from componentID: ComponentID) {
+        let dependency = Dependency(dependentComponentID: componentID, dependency: entity.entityID)
         dependents[dependency] = entity
     }
 }

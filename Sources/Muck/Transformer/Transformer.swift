@@ -79,13 +79,13 @@ class Transformer {
     private func updateReferenced(componentID: ComponentID?, withDependency entity: Entity, from thisComponentID: ComponentID) {
         guard let referencedID = componentID else { return } // external declaration
         var referencedComponent = findComponent(forID: referencedID)
-        referencedComponent.references.addDependent(dependentComponentID: thisComponentID, entity: entity)
+        referencedComponent.references.addDependency(on: entity, from: thisComponentID)
         components[referencedID] = referencedComponent
     }
 
     private func updateThis(componentID: ComponentID, withDependency entity: Entity, ownedBy referencedComponentID: ComponentID?) {
         var thisComponent = findComponent(forID: componentID)
-        thisComponent.references.addDependency(entity.entityID, componentID: referencedComponentID, name: entity.name)
+        thisComponent.references.addDependency(on: entity, ownedBy: referencedComponentID)
         components[componentID] = thisComponent
     }
 
