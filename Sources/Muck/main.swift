@@ -10,21 +10,24 @@ let schemeArg: OptionArgument<String> = parser.add(option: "--scheme", shortName
 let targetArg: OptionArgument<String> = parser.add(option: "--target", shortName: "-t", kind: String.self, usage: "The Xcode target (required if project is specified)")
 let modulesArg: OptionArgument<[String]> = parser.add(option: "--modules", shortName: "-m", kind: [String].self, usage: "The modules to analyse (required)")
 let byFolderArg: OptionArgument<Bool> = parser.add(option: "--byFolder", shortName: "-f", kind: Bool.self, usage: "Treat folders as components (by default, modules are treated as components)")
+let verboseArg: OptionArgument<Bool> = parser.add(option: "--verbose", shortName: "-v", kind: Bool.self, usage: "Verbose logging")
 
+var parsedWorkspace: String?
+var parsedProject: String?
+var parsedScheme: String?
+var parsedTarget: String?
 var parsedModules: [String]?
 var parsedByFolder: Bool?
-var parsedWorkspace: String?
-var parsedScheme: String?
-var parsedProject: String?
-var parsedTarget: String?
+var parsedVerboseArg: Bool?
 do {
     let parsedArguments = try parser.parse(arguments)
+    parsedWorkspace = parsedArguments.get(workspaceArg)
+    parsedProject = parsedArguments.get(projectArg)
+    parsedScheme = parsedArguments.get(schemeArg)
+    parsedTarget = parsedArguments.get(targetArg)
     parsedModules = parsedArguments.get(modulesArg)
     parsedByFolder = parsedArguments.get(byFolderArg)
-    parsedWorkspace = parsedArguments.get(workspaceArg)
-    parsedScheme = parsedArguments.get(schemeArg)
-    parsedProject = parsedArguments.get(projectArg)
-    parsedTarget = parsedArguments.get(targetArg)
+    parsedVerboseArg = parsedArguments.get(verboseArg)
 }
 catch let error as ArgumentParserError {
     printStdErr(error.description)
@@ -33,9 +36,9 @@ catch let error {
     printStdErr(error.localizedDescription)
 }
 
-func start(path: String, xcodeBuildArguments: [String], moduleNames: [String], granularityStrategy: GranularityStrategy, componentNameStrategy: ComponentNameStrategy) {
+func start(path: String, xcodeBuildArguments: [String], moduleNames: [String], granularityStrategy: GranularityStrategy, componentNameStrategy: ComponentNameStrategy, isVerbose: Bool) {
 
-    let finder = SourceKittenFinder(path: path, xcodeBuildArguments: xcodeBuildArguments, moduleNames: moduleNames, isVerbose: true)
+    let finder = SourceKittenFinder(path: path, xcodeBuildArguments: xcodeBuildArguments, moduleNames: moduleNames, isVerbose: isVerbose)
     let transformer = Transformer(granularityStrategy: granularityStrategy, componentNameStrategy: componentNameStrategy)
 
     do {
@@ -89,10 +92,14 @@ if let moduleNames = parsedModules {
     }
     let componentNameStrategy: ComponentNameStrategy = byFolder ? FilePathComponentNameStrategy(rootPath: path + "/") : ModuleComponentNameStrategy()
 
-    printStdErr(path)
-    printStdErr(xcodeBuildArguments.description)
-    printStdErr(moduleNames.description)
-    printStdErr(granularityStrategy.description)
+    let isVerbose = parsedVerboseArg ?? false
+
+    if isVerbose {
+        printStdErr(path)
+        printStdErr(xcodeBuildArguments.description)
+        printStdErr(moduleNames.description)
+        printStdErr(granularityStrategy.description)
+    }
 
     if hasWorkspace && hasProject {
         parser.printUsage(on: stderrStream)
@@ -107,7 +114,7 @@ if let moduleNames = parsedModules {
         exit(1)
     }
 
-    start(path: path, xcodeBuildArguments: xcodeBuildArguments, moduleNames: moduleNames, granularityStrategy: granularityStrategy, componentNameStrategy: componentNameStrategy)
+    start(path: path, xcodeBuildArguments: xcodeBuildArguments, moduleNames: moduleNames, granularityStrategy: granularityStrategy, componentNameStrategy: componentNameStrategy, isVerbose: isVerbose)
 } else {
     parser.printUsage(on: stderrStream)
 }
