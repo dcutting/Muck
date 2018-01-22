@@ -42,56 +42,51 @@ class SourceKittenFinder: SourceFileFinder {
         return sourceFiles.flatMap { $0 }
     }
 
-    private func log(_ message: String) {
-        if isVerbose {
-            printStdErr(message)
-        }
+    private func makeSourceFile(for path: String, module: String, arguments: [String]) -> SourceFile? {
+        let sourceKitOutput = Request.index(file: path, arguments: arguments).send()
+        let sourceKitEntities = findSourceKitEntities(in: sourceKitOutput)
+        guard let (declarations, references) = extractDeclarationsAndReferences(from: sourceKitEntities) else { return nil }
+        return SourceFile(path: path, module: module, declarations: declarations, references: references)
     }
 
-    private func makeSourceFile(for file: String, module: String, arguments: [String]) -> SourceFile? {
-
-        let request = Request.index(file: file, arguments: arguments).send()
-
-        guard let entities = request["key.entities"] as? [SourceKitRepresentable] else { return nil }
-
-        guard let (declarations, references) = extractEntities(from: entities) else { return nil }
-
-        return SourceFile(path: file, module: module, declarations: declarations, references: references)
+    private func findSourceKitEntities(in sourceKitOutput: [String: SourceKitRepresentable]) -> [[String: SourceKitRepresentable]] {
+        guard let keyEntities = sourceKitOutput["key.entities"] as? [SourceKitRepresentable] else { return [] }
+        return keyEntities.flatMap { $0 as? [String: SourceKitRepresentable] }
     }
 
-    private func extractEntities(from entities: [SourceKitRepresentable]) -> (declarations: [Entity], references: [Entity])? {
+    private func extractDeclarationsAndReferences(from sourceKitEntities: [[String: SourceKitRepresentable]]) -> (declarations: [Entity], references: [Entity])? {
 
         var declarations = [Entity]()
         var references = [Entity]()
 
-        for rawEntity in entities {
+        for sourceKitEntity in sourceKitEntities {
 
-            guard let entity = rawEntity as? [String: SourceKitRepresentable] else { continue }
-
-            guard let kind = entity["key.kind"] as? String else { continue }
-
-            if isNonLocal(kind: kind) {
-                guard
-                    let name = entity["key.name"] as? String,
-                    let usr = entity["key.usr"] as? String
-                    else { continue }
-                let entity = Entity(name: name, kind: kind, usr: usr)
-                if isDeclaration(kind) {
+            if let entity = makeEntity(from: sourceKitEntity) {
+                if entity.isDeclaration {
                     declarations.append(entity)
                 } else {
                     references.append(entity)
                 }
             }
 
-            guard let subEntities = entity["key.entities"] as? [SourceKitRepresentable] else { continue }
-
-            if let (subDeclarations, subReferences) = extractEntities(from: subEntities) {
+            let subEntities = findSourceKitEntities(in: sourceKitEntity)
+            if let (subDeclarations, subReferences) = extractDeclarationsAndReferences(from: subEntities) {
                 declarations.append(contentsOf: subDeclarations)
                 references.append(contentsOf: subReferences)
             }
         }
 
         return (declarations, references)
+    }
+
+    private func makeEntity(from sourceKitEntity: [String: SourceKitRepresentable]) -> Entity? {
+        guard
+            let name = sourceKitEntity["key.name"] as? String,
+            let usr = sourceKitEntity["key.usr"] as? String,
+            let kind = sourceKitEntity["key.kind"] as? String,
+            isNonLocal(kind: kind)
+            else { return nil }
+        return Entity(name: name, kind: kind, usr: usr)
     }
 
     private func isNonLocal(kind: String) -> Bool {
@@ -144,7 +139,9 @@ class SourceKittenFinder: SourceFileFinder {
         return nonLocalKinds.contains(kind)
     }
 
-    private func isDeclaration(_ kind: String) -> Bool {
-        return kind.contains(".decl.")
+    private func log(_ message: String) {
+        if isVerbose {
+            printStdErr(message)
+        }
     }
 }

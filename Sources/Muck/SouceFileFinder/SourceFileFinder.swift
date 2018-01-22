@@ -17,6 +17,10 @@ struct Entity {
     var isAbstract: Bool {
         return kind.contains(".protocol")
     }
+
+    var isDeclaration: Bool {
+        return kind.contains(".decl.")
+    }
 }
 
 typealias EntityID = String
