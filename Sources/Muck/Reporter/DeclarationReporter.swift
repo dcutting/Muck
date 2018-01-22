@@ -11,6 +11,6 @@ class DeclarationReporter: Reporter {
             }
             return ["\(component.name)"] + abstracts + concretes
         }
-        return Array(components.joined()).joined(separator: "\n")
+        return components.flattened().joined(separator: "\n")
     }
 }

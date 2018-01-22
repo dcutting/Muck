@@ -33,9 +33,9 @@ catch let error {
     printStdErr(error.localizedDescription)
 }
 
-func start(path: String, xcodeBuildArguments: [String], modules: [String], granularityStrategy: GranularityStrategy, componentNameStrategy: ComponentNameStrategy) {
+func start(path: String, xcodeBuildArguments: [String], moduleNames: [String], granularityStrategy: GranularityStrategy, componentNameStrategy: ComponentNameStrategy) {
 
-    let finder = SourceKittenFinder(path: path, xcodeBuildArguments: xcodeBuildArguments, modules: modules)
+    let finder = SourceKittenFinder(path: path, xcodeBuildArguments: xcodeBuildArguments, moduleNames: moduleNames)
     let transformer = Transformer(granularityStrategy: granularityStrategy, componentNameStrategy: componentNameStrategy)
 
     do {
@@ -51,14 +51,14 @@ func start(path: String, xcodeBuildArguments: [String], modules: [String], granu
             OverallCleanlinessReporter()
             ])
         print(reporter.makeReport(for: mainSequence))
-    } catch FinderError.build(let name) {
+    } catch SourceKittenFinderError.build(let name) {
         printStdErr("Could not build project for workspace/scheme or project/target, or could not find module \(name)")
     } catch {
         printStdErr(error.localizedDescription)
     }
 }
 
-if let modules = parsedModules {
+if let moduleNames = parsedModules {
     var hasWorkspace = false
     var hasScheme = false
     var hasProject = false
@@ -91,7 +91,7 @@ if let modules = parsedModules {
 
     printStdErr(path)
     printStdErr(xcodeBuildArguments.description)
-    printStdErr(modules.description)
+    printStdErr(moduleNames.description)
     printStdErr(granularityStrategy.description)
 
     if hasWorkspace && hasProject {
@@ -107,7 +107,7 @@ if let modules = parsedModules {
         exit(1)
     }
 
-    start(path: path, xcodeBuildArguments: xcodeBuildArguments, modules: modules, granularityStrategy: granularityStrategy, componentNameStrategy: componentNameStrategy)
+    start(path: path, xcodeBuildArguments: xcodeBuildArguments, moduleNames: moduleNames, granularityStrategy: granularityStrategy, componentNameStrategy: componentNameStrategy)
 } else {
     parser.printUsage(on: stderrStream)
 }

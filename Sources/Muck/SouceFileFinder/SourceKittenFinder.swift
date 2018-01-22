@@ -1,4 +1,3 @@
-import Foundation
 import SourceKittenFramework
 
 enum SourceKittenFinderError: Error {
@@ -52,26 +51,25 @@ class SourceKittenFinder: SourceFileFinder {
         //            "source.lang.swift.ref.var.local"
     ]
 
-    let path: String
-    let xcodeBuildArguments: [String]
-    let modules: [String]
+    private let path: String
+    private let xcodeBuildArguments: [String]
+    private let moduleNames: [String]
 
-    init(path: String, xcodeBuildArguments: [String], modules: [String]) {
+    init(path: String, xcodeBuildArguments: [String], moduleNames: [String]) {
         self.path = path
         self.xcodeBuildArguments = xcodeBuildArguments
-        self.modules = modules
+        self.moduleNames = moduleNames
     }
 
     func find() throws -> [SourceFile] {
-        return try analyse(path: path, xcodeBuildArguments: xcodeBuildArguments, moduleNames: modules)
+        return try analyse(path: path, xcodeBuildArguments: xcodeBuildArguments, moduleNames: moduleNames)
     }
 
     private func analyse(path: String, xcodeBuildArguments: [String], moduleNames: [String]) throws -> [SourceFile] {
-
-        let sourceFiles = try moduleNames.map { module in
-            try analyse(path: path, xcodeBuildArguments: xcodeBuildArguments, moduleName: module)
+        let sourceFiles = try moduleNames.map { moduleName in
+            try analyse(path: path, xcodeBuildArguments: xcodeBuildArguments, moduleName: moduleName)
         }
-        return Array(sourceFiles.joined())
+        return sourceFiles.flattened()
     }
 
     private func analyse(path: String, xcodeBuildArguments: [String], moduleName: String) throws -> [SourceFile] {
