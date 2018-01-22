@@ -45,8 +45,8 @@ func start(path: String, xcodeBuildArguments: [String], modules: [String], granu
         let mainSequence = MainSequence(components: components)
 
         let reporter = CompoundReporter(reporters: [
-            AbstractnessReporter(),
-            StabilityReporter(),
+            DeclarationReporter(),
+            DependencyReporter(),
             CSVReporter(sortBy: .distance),
             StatisticsReporter()
             ])

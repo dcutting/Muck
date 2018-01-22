@@ -1,4 +1,4 @@
-class StabilityReporter: Reporter {
+class DependencyReporter: Reporter {
 
     func makeReport(for mainSequence: MainSequence) -> String {
 
