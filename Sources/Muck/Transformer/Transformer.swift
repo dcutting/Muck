@@ -3,12 +3,14 @@ import Foundation
 class Transformer {
 
     private let granularityStrategy: GranularityStrategy
+    private let componentNameStrategy: ComponentNameStrategy
 
     private var components = [ComponentID: Component]()
     private var declarations = [EntityID: ComponentID]()
 
-    init(granularityStrategy: GranularityStrategy) {
+    init(granularityStrategy: GranularityStrategy, componentNameStrategy: ComponentNameStrategy) {
         self.granularityStrategy = granularityStrategy
+        self.componentNameStrategy = componentNameStrategy
     }
 
     func transform(files: [SourceFile]) -> [Component] {
@@ -84,7 +86,11 @@ class Transformer {
     }
 
     private func findComponent(for componentID: ComponentID) -> Component {
-        return components[componentID, default:
-            Component(name: componentID, stability: Stability(), abstractness: Abstractness())]
+        return components[componentID, default: makeComponent(for: componentID)]
+    }
+
+    private func makeComponent(for componentID: ComponentID) -> Component {
+        let name = componentNameStrategy.makeComponentName(for: componentID)
+        return Component(name: name, stability: Stability(), abstractness: Abstractness())
     }
 }

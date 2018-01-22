@@ -33,10 +33,10 @@ catch let error {
     printStdErr(error.localizedDescription)
 }
 
-func start(path: String, xcodeBuildArguments: [String], modules: [String], granularityStrategy: GranularityStrategy) {
+func start(path: String, xcodeBuildArguments: [String], modules: [String], granularityStrategy: GranularityStrategy, componentNameStrategy: ComponentNameStrategy) {
 
     let finder = SourceKittenFinder(path: path, xcodeBuildArguments: xcodeBuildArguments, modules: modules)
-    let transformer = Transformer(granularityStrategy: granularityStrategy)
+    let transformer = Transformer(granularityStrategy: granularityStrategy, componentNameStrategy: componentNameStrategy)
 
     do {
         let files = try finder.find()
@@ -87,6 +87,8 @@ if let modules = parsedModules {
         xcodeBuildArguments.append(contentsOf: ["-target", target])
         hasTarget = true
     }
+    let componentNameStrategy: ComponentNameStrategy = byFolder ? FilePathComponentNameFactory(rootPath: path + "/") : ModuleComponentNameFactory()
+
     printStdErr(path)
     printStdErr(xcodeBuildArguments.description)
     printStdErr(modules.description)
@@ -105,7 +107,7 @@ if let modules = parsedModules {
         exit(1)
     }
 
-    start(path: path, xcodeBuildArguments: xcodeBuildArguments, modules: modules, granularityStrategy: granularityStrategy)
+    start(path: path, xcodeBuildArguments: xcodeBuildArguments, modules: modules, granularityStrategy: granularityStrategy, componentNameStrategy: componentNameStrategy)
 } else {
     parser.printUsage(on: stderrStream)
 }
