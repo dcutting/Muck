@@ -27,10 +27,10 @@ do {
     parsedTarget = parsedArguments.get(targetArg)
 }
 catch let error as ArgumentParserError {
-    print(error.description)
+    printStdErr(error.description)
 }
 catch let error {
-    print(error.localizedDescription)
+    printStdErr(error.localizedDescription)
 }
 
 func start(path: String, xcodeBuildArguments: [String], modules: [String], granularity: Transformer.ComponentGranularity) {
@@ -52,9 +52,9 @@ func start(path: String, xcodeBuildArguments: [String], modules: [String], granu
             ])
         print(reporter.makeReport(for: mainSequence))
     } catch FinderError.build(let name) {
-        print("Could not build project for workspace/scheme or project/target, or could not find module \(name)")
+        printStdErr("Could not build project for workspace/scheme or project/target, or could not find module \(name)")
     } catch {
-        print(error)
+        printStdErr(error.localizedDescription)
     }
 }
 
@@ -87,25 +87,25 @@ if let modules = parsedModules {
         xcodeBuildArguments.append(contentsOf: ["-target", target])
         hasTarget = true
     }
-    print(path)
-    print(xcodeBuildArguments)
-    print(modules)
-    print(granularity)
+    printStdErr(path)
+    printStdErr(xcodeBuildArguments.description)
+    printStdErr(modules.description)
+    printStdErr("\(granularity)")
 
     if hasWorkspace && hasProject {
-        parser.printUsage(on: stdoutStream)
+        parser.printUsage(on: stderrStream)
         exit(1)
     }
     if hasWorkspace && !hasScheme {
-        parser.printUsage(on: stdoutStream)
+        parser.printUsage(on: stderrStream)
         exit(1)
     }
     if hasProject && !hasTarget {
-        parser.printUsage(on: stdoutStream)
+        parser.printUsage(on: stderrStream)
         exit(1)
     }
 
     start(path: path, xcodeBuildArguments: xcodeBuildArguments, modules: modules, granularity: granularity)
 } else {
-    parser.printUsage(on: stdoutStream)
+    parser.printUsage(on: stderrStream)
 }
