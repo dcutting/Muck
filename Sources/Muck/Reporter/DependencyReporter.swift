@@ -9,7 +9,7 @@ class DependencyReporter: Reporter {
     func makeReport(for mainSequence: MainSequence) -> String {
 
         let components = mainSequence.components.map { component -> [String] in
-            let dependencies = component.stability.fanOuts.map { dependency -> String in
+            let dependencies = component.references.dependencies.map { dependency -> String in
                 var componentName = "<extern>"
                 if let componentID = dependency.value.0 {
                     componentName = componentNameStrategy.findComponentName(for: componentID)

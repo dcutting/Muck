@@ -47,9 +47,9 @@ class Transformer {
     private func analyseAbstractness(for declaration: Entity, componentID: ComponentID) {
         var component = findComponent(for: componentID)
         if declaration.isAbstract {
-            component.abstractness.addAbstract(declaration.name)
+            component.declarations.addAbstract(declaration.name)
         } else {
-            component.abstractness.addConcrete(declaration.name)
+            component.declarations.addConcrete(declaration.name)
         }
         components[componentID] = component
     }
@@ -70,12 +70,12 @@ class Transformer {
                 var dstComponent: Component?
                 if let dst = dstComponentID {
                     dstComponent = findComponent(for: dst)
-                    dstComponent?.stability.addDependent(srcComponentID, entityID: entityID)
+                    dstComponent?.references.addDependent(srcComponentID, entityID: entityID)
                     components[dst] = dstComponent
                 } // else external declaration
 
                 var srcComponent = findComponent(for: srcComponentID)
-                srcComponent.stability.addDependency(entityID, componentID: dstComponentID, name: reference.name)
+                srcComponent.references.addDependency(entityID, componentID: dstComponentID, name: reference.name)
                 components[srcComponentID] = srcComponent
             }
         }
@@ -91,6 +91,6 @@ class Transformer {
 
     private func makeComponent(for componentID: ComponentID) -> Component {
         let name = componentNameStrategy.findComponentName(for: componentID)
-        return Component(name: name, stability: Stability(), abstractness: Abstractness())
+        return Component(name: name, declarations: Declarations(), references: References())
     }
 }

@@ -27,9 +27,9 @@ class ComponentCleanlinessReporter: Reporter {
     }
 
     private func makeRow(for component: Component) -> String {
-        let stability = component.stability
-        let abstractness = component.abstractness
+        let references = component.references
+        let declarations = component.declarations
         let rating = calculateRating(distance: component.distance)
-        return "\(component.name),\(stability.fanIn),\(stability.fanOut),\(stability.instability),\(abstractness.numberClasses),\(abstractness.numberAbstracts),\(abstractness.abstractness),\(component.distance),\(rating)"
+        return "\(component.name),\(references.fanIn),\(references.fanOut),\(references.instability),\(declarations.numberDeclarations),\(declarations.numberAbstracts),\(declarations.abstractness),\(component.distance),\(rating)"
     }
 }
