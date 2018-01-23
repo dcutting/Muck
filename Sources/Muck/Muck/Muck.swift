@@ -28,7 +28,7 @@ class Muck {
             print(reporter.makeReport(for: mainSequence))
 
         } catch SourceKittenFinderError.build(let name) {
-            printStdErr("Could not build specified workspace/scheme or project/target, or could not find module \(name)")
+            printStdErr("Error: Could not build specified workspace/scheme or project/target, or could not find module \(name)")
         } catch {
             printStdErr(error.localizedDescription)
         }
