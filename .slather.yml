@@ -1,5 +1,7 @@
 coverage_service: coveralls
 xcodeproj: Muck.xcodeproj
-scheme: Muck
+scheme: Muck-Package
+build_directory: .xcbuild
+binary_basename: Muck
 ignore:
   - Tests/*
