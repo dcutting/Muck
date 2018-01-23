@@ -1,15 +1,26 @@
-class MuckApp {
+public class Raker {
 
-    struct Arguments {
+    public struct Arguments {
         let path: String
         let xcodeBuildArguments: [String]
         let moduleNames: [String]
         let isVerbose: Bool
         let granularityStrategy: GranularityStrategy
         let componentNameStrategy: ComponentNameStrategy
+
+        public init(path: String, xcodeBuildArguments: [String], moduleNames: [String], isVerbose: Bool, granularityStrategy: GranularityStrategy, componentNameStrategy: ComponentNameStrategy) {
+            self.path = path
+            self.xcodeBuildArguments = xcodeBuildArguments
+            self.moduleNames = moduleNames
+            self.isVerbose = isVerbose
+            self.granularityStrategy = granularityStrategy
+            self.componentNameStrategy = componentNameStrategy
+        }
     }
 
-    func start(arguments args: Arguments) {
+    public init() {}
+
+    public func start(arguments args: Arguments) {
 
         do {
             let finder = SourceKittenFinder(path: args.path, xcodeBuildArguments: args.xcodeBuildArguments, moduleNames: args.moduleNames, isVerbose: args.isVerbose)

@@ -1,8 +1,9 @@
 import Foundation
+import Muck
 
 func main() {
     let arguments = ArgumentsBuilder().parse(arguments: ProcessInfo.processInfo.arguments)
-    MuckApp().start(arguments: arguments)
+    Raker().start(arguments: arguments)
 }
 
 main()

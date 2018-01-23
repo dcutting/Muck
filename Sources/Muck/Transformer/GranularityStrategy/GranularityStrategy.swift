@@ -1,3 +1,3 @@
-protocol GranularityStrategy: CustomStringConvertible {
+public protocol GranularityStrategy: CustomStringConvertible {
     func findComponentID(for file: SourceFile) -> ComponentID
 }

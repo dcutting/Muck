@@ -26,11 +26,13 @@ enum ArgumentsBuilderError: Error, LocalizedError {
     }
 }
 
-class ArgumentsBuilder {
+public class ArgumentsBuilder {
 
     private let parser = ArgumentParser(usage: "<options>", overview: "A dependency analyser for Swift projects")
 
-    func parse(arguments: [String]) -> MuckApp.Arguments {
+    public init() {}
+
+    public func parse(arguments: [String]) -> Raker.Arguments {
 
         do {
             let workspaceArg: OptionArgument<String> =
@@ -66,7 +68,7 @@ class ArgumentsBuilder {
 
             let isVerbose = parsedArguments.get(verboseArg) ?? false
 
-            let muckArguments = MuckApp.Arguments(path: path,
+            let muckArguments = Raker.Arguments(path: path,
                                                xcodeBuildArguments: xcodeBuildArguments,
                                                moduleNames: moduleNames,
                                                isVerbose: isVerbose,
