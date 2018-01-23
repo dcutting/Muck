@@ -30,7 +30,7 @@ class ArgumentsBuilder {
 
     private let parser = ArgumentParser(usage: "<options>", overview: "A dependency analyser for Swift projects")
 
-    func parse(arguments: [String]) -> Muck.Arguments {
+    func parse(arguments: [String]) -> MuckApp.Arguments {
 
         do {
             let workspaceArg: OptionArgument<String> =
@@ -66,7 +66,7 @@ class ArgumentsBuilder {
 
             let isVerbose = parsedArguments.get(verboseArg) ?? false
 
-            let muckArguments = Muck.Arguments(path: path,
+            let muckArguments = MuckApp.Arguments(path: path,
                                                xcodeBuildArguments: xcodeBuildArguments,
                                                moduleNames: moduleNames,
                                                isVerbose: isVerbose,

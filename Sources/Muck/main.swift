@@ -2,7 +2,7 @@ import Foundation
 
 func main() {
     let arguments = ArgumentsBuilder().parse(arguments: ProcessInfo.processInfo.arguments)
-    Muck().start(arguments: arguments)
+    MuckApp().start(arguments: arguments)
 }
 
 main()

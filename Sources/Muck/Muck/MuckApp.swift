@@ -1,4 +1,4 @@
-class Muck {
+class MuckApp {
 
     struct Arguments {
         let path: String
