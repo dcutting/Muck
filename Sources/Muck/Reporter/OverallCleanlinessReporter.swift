@@ -1,5 +1,9 @@
 class OverallCleanlinessReporter: Reporter {
 
+    var name: String {
+        return "Overall Cleanliness"
+    }
+
     func makeReport(for mainSequence: MainSequence) -> String {
         guard
             let mean = mainSequence.mean,

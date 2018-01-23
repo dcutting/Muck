@@ -7,6 +7,10 @@ class ComponentCleanlinessReporter: Reporter {
 
     private let sortBy: SortBy
 
+    var name: String {
+        return "Component Cleanliness"
+    }
+
     init(sortBy: SortBy) {
         self.sortBy = sortBy
     }

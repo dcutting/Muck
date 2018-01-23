@@ -1,5 +1,9 @@
 class DeclarationReporter: Reporter {
 
+    var name: String {
+        return "Declarations"
+    }
+
     func makeReport(for mainSequence: MainSequence) -> String {
 
         let components = mainSequence.components.map { component -> [String] in

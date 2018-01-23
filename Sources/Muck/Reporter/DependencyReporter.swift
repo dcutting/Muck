@@ -2,6 +2,10 @@ class DependencyReporter: Reporter {
 
     private let componentNameStrategy: ComponentNameStrategy
 
+    var name: String {
+        return "Dependencies"
+    }
+
     init(componentNameStrategy: ComponentNameStrategy) {
         self.componentNameStrategy = componentNameStrategy
     }
