@@ -14,4 +14,8 @@ class FilePathComponentNameStrategy: ComponentNameStrategy {
             return componentID
         }
     }
+
+    var description: String {
+        return "take component names from file paths"
+    }
 }

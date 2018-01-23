@@ -4,6 +4,6 @@ class ModuleGranularityStrategy: GranularityStrategy {
     }
 
     var description: String {
-        return "components by module"
+        return "treat modules as components"
     }
 }

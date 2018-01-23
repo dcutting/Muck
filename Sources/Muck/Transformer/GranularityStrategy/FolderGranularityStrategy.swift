@@ -7,6 +7,6 @@ class FolderGranularityStrategy: GranularityStrategy {
     }
 
     var description: String {
-        return "components by folder"
+        return "treat folders as components"
     }
 }

@@ -65,19 +65,20 @@ class ArgumentsBuilder {
             }
 
             let isVerbose = parsedArguments.get(verboseArg) ?? false
-            if isVerbose {
-                printStdErr(path)
-                printStdErr(xcodeBuildArguments.description)
-                printStdErr(moduleNames.description)
-                printStdErr(granularityStrategy.description)
-            }
 
-            return Muck.Arguments(path: path,
-                                  xcodeBuildArguments: xcodeBuildArguments,
-                                  moduleNames: moduleNames,
-                                  isVerbose: isVerbose,
-                                  granularityStrategy: granularityStrategy,
-                                  componentNameStrategy: componentNameStrategy)
+            let muckArguments = Muck.Arguments(path: path,
+                                               xcodeBuildArguments: xcodeBuildArguments,
+                                               moduleNames: moduleNames,
+                                               isVerbose: isVerbose,
+                                               granularityStrategy: granularityStrategy,
+                                               componentNameStrategy: componentNameStrategy)
+
+            if isVerbose {
+                printStdErr("\(muckArguments)")
+            }
+            
+            return muckArguments
+
         } catch let error as ArgumentParserError {
             printStdErr("Error: \(error.description)\n")
             exitWithUsage()
