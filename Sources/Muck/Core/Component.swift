@@ -1,4 +1,4 @@
-public typealias ComponentID = String
+typealias ComponentID = String
 
 struct Component {
     let name: String

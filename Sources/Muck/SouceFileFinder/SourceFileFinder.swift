@@ -2,7 +2,7 @@ protocol SourceFileFinder {
     func find() throws -> [SourceFile]
 }
 
-public struct SourceFile {
+struct SourceFile {
     let path: String
     let module: String
     let declarations: [Entity]

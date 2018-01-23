@@ -26,13 +26,11 @@ enum ArgumentsBuilderError: Error, LocalizedError {
     }
 }
 
-public class ArgumentsBuilder {
+class ArgumentsBuilder {
 
     private let parser = ArgumentParser(usage: "<options>", overview: "A dependency analyser for Swift projects")
 
-    public init() {}
-
-    public func parse(arguments: [String]) -> Raker.Arguments {
+    func parse(arguments: [String]) -> Raker.Arguments {
 
         do {
             let workspaceArg: OptionArgument<String> =
