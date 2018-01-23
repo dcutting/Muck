@@ -12,7 +12,8 @@ install:
   - bundle install --without=documentation
 script:
   - set -o pipefail
+  - swift build
   - swift package generate-xcodeproj
-  - xcodebuild -project Muck.xcodeproj -scheme Muck clean build test | bundle exec xcpretty
+  - xcodebuild -project Muck.xcodeproj -scheme Muck-Package clean build test | bundle exec xcpretty
 after_success:
   - bundle exec slather
