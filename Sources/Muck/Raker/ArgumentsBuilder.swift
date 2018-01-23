@@ -7,7 +7,7 @@ enum ArgumentsBuilderError: Error, LocalizedError {
     case needWorkspaceOrProject
     case workspaceAndProjectSpecified
     case missingScheme
-    case missingTarget
+    case missingTargetOrScheme
     case noModulesSpecified
 
     var errorDescription: String? {
@@ -18,8 +18,8 @@ enum ArgumentsBuilderError: Error, LocalizedError {
             return "Specify only a workspace or project"
         case .missingScheme:
             return "Missing scheme"
-        case .missingTarget:
-            return "Missing target"
+        case .missingTargetOrScheme:
+            return "Missing target or scheme"
         case .noModulesSpecified:
             return "No modules specified for analysis"
         }
@@ -134,8 +134,8 @@ class ArgumentsBuilder {
         if hasWorkspace && !hasScheme {
             throw ArgumentsBuilderError.missingScheme
         }
-        if hasProject && !hasTarget {
-            throw ArgumentsBuilderError.missingTarget
+        if hasProject && !(hasTarget || hasScheme) {
+            throw ArgumentsBuilderError.missingTargetOrScheme
         }
 
         return (path, xcodeBuildArguments)
