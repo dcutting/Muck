@@ -76,7 +76,7 @@ class ArgumentsBuilder {
             if isVerbose {
                 printStdErr("\(muckArguments)")
             }
-            
+
             return muckArguments
 
         } catch let error as ArgumentParserError {
