@@ -18,11 +18,3 @@ class ModuleGranularityStrategyTests: XCTestCase {
         XCTAssertEqual("treat modules as components", sut.description)
     }
 }
-
-func any() -> String {
-    return "dummy"
-}
-
-func any() -> [Entity] {
-    return []
-}
