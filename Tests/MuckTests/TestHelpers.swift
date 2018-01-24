@@ -13,6 +13,10 @@ func any() -> Entity {
     return Entity(entityID: any(), name: any(), kind: any(), isAbstract: any(), isDeclaration: any())
 }
 
+func any() -> ComponentCleanlinessReporter.SortBy {
+    return .name
+}
+
 func dummy() -> String {
     return UUID().uuidString
 }
