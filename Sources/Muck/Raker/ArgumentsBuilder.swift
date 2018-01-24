@@ -47,6 +47,8 @@ class ArgumentsBuilder {
                 parser.add(option: "--byFolder", shortName: "-f", kind: Bool.self, usage: "Treat folders as components (by default, modules are treated as components)")
             let verboseArg: OptionArgument<Bool> =
                 parser.add(option: "--verbose", shortName: "-v", kind: Bool.self, usage: "Verbose logging")
+            let ignoreExternsArg: OptionArgument<Bool> =
+                parser.add(option: "--ignoreExterns", shortName: "-i", kind: Bool.self, usage: "Ignore dependencies external to specified modules")
 
             let arguments = Array(arguments.dropFirst())
             let parsedArguments = try parser.parse(arguments)
@@ -65,13 +67,15 @@ class ArgumentsBuilder {
             }
 
             let isVerbose = parsedArguments.get(verboseArg) ?? false
+            let ignoreExternalDependencies = parsedArguments.get(ignoreExternsArg) ?? false
 
             let muckArguments = Raker.Arguments(path: path,
                                                xcodeBuildArguments: xcodeBuildArguments,
                                                moduleNames: moduleNames,
                                                isVerbose: isVerbose,
                                                granularityStrategy: granularityStrategy,
-                                               componentNameStrategy: componentNameStrategy)
+                                               componentNameStrategy: componentNameStrategy,
+                                               shouldIgnoreExternalDependencies: ignoreExternalDependencies)
 
             if isVerbose {
                 printStdErr("\(muckArguments)")

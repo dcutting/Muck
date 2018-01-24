@@ -4,13 +4,15 @@ class Transformer {
 
     private let granularityStrategy: GranularityStrategy
     private let componentNameStrategy: ComponentNameStrategy
+    private let shouldIgnoreExternalDependencies: Bool
 
     private var components = [ComponentID: Component]()
     private var declarations = [EntityID: ComponentID]()
 
-    init(granularityStrategy: GranularityStrategy, componentNameStrategy: ComponentNameStrategy) {
+    init(granularityStrategy: GranularityStrategy, componentNameStrategy: ComponentNameStrategy, shouldIgnoreExternalDependencies: Bool) {
         self.granularityStrategy = granularityStrategy
         self.componentNameStrategy = componentNameStrategy
+        self.shouldIgnoreExternalDependencies = shouldIgnoreExternalDependencies
     }
 
     func transform(files: [SourceFile]) -> [Component] {
@@ -84,6 +86,7 @@ class Transformer {
     }
 
     private func updateThis(componentID: ComponentID, withDependency entity: Entity, ownedBy referencedComponentID: ComponentID?) {
+        if referencedComponentID == nil && shouldIgnoreExternalDependencies { return }
         var thisComponent = findComponent(forID: componentID)
         thisComponent.references.addDependency(on: entity, ownedBy: referencedComponentID)
         components[componentID] = thisComponent
