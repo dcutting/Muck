@@ -14,9 +14,9 @@ class OverallCleanlinessReporter: Reporter {
         let rating = calculateRating(distance: median)
         return """
 Count,\(count)
-Mean,\(mean)
-Median,\(median)
-Stddev,\(standardDeviation)
+Mean,\(mean.formatted)
+Median,\(median.formatted)
+Stddev,\(standardDeviation.formatted)
 Rating,\(rating)
 """
     }

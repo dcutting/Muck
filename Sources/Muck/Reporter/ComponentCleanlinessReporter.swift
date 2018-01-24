@@ -34,6 +34,6 @@ class ComponentCleanlinessReporter: Reporter {
         let references = component.references
         let declarations = component.declarations
         let rating = calculateRating(distance: component.distance)
-        return "\(component.name),\(references.fanIn),\(references.fanOut),\(references.instability),\(declarations.numberDeclarations),\(declarations.numberAbstracts),\(declarations.abstractness),\(component.distance),\(rating)"
+        return "\(component.name),\(references.fanIn),\(references.fanOut),\(references.instability.formatted),\(declarations.numberDeclarations),\(declarations.numberAbstracts),\(declarations.abstractness.formatted),\(component.distance.formatted),\(rating)"
     }
 }
