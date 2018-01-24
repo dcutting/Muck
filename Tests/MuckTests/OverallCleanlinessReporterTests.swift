@@ -8,6 +8,13 @@ class OverallCleanlinessReporterTests: XCTestCase {
         XCTAssertEqual("Overall Cleanliness", sut.name)
     }
 
+    func test_makeReport_noComponents() {
+        let sut = OverallCleanlinessReporter()
+        let mainSequence = MainSequence(components: [])
+        let actual = sut.makeReport(for: mainSequence)
+        XCTAssertEqual("", actual)
+    }
+
     func test_makeReport() {
         let sut = OverallCleanlinessReporter()
         let expected = """
