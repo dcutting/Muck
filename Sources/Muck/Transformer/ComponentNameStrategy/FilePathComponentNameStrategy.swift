@@ -10,9 +10,8 @@ class FilePathComponentNameStrategy: ComponentNameStrategy {
         let hasPrefix = componentID.hasPrefix(rootPath)
         if hasPrefix {
             return String(componentID.dropFirst(rootPath.count))
-        } else {
-            return componentID
         }
+        return componentID
     }
 
     var description: String {
