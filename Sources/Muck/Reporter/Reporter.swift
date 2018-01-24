@@ -12,8 +12,7 @@ extension Reporter {
             return "B"
         } else if distance < 0.5 {
             return "C"
-        } else {
-            return "D"
         }
+        return "D"
     }
 }
