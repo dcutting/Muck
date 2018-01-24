@@ -1,7 +1,7 @@
 import XCTest
 @testable import Muck
 
-class DoubleConvertible: XCTestCase {
+class DoubleConvertibleTests: XCTestCase {
 
     func test_doubleAsDouble() {
         let x: Double = 5.3
