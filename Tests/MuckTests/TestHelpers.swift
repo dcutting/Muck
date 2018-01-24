@@ -34,17 +34,34 @@ func any() -> [Reporter] {
 }
 
 func any() -> Reporter {
+    return StubReporter(name: any(), report: { _ in "" })
+}
 
-    class TestReporter: Reporter {
+func any() -> Declarations {
+    return Declarations()
+}
 
-        var name: String = ""
+func any() -> References {
+    return References()
+}
 
-        func makeReport(for: MainSequence) -> String {
-            return any()
-        }
+func any() -> MainSequence {
+    return MainSequence(components: [])
+}
+
+class StubReporter: Reporter {
+
+    let name: String
+    let report: (MainSequence) -> String
+
+    init(name: String, report: @escaping (MainSequence) -> String) {
+        self.name = name
+        self.report = report
     }
 
-    return TestReporter()
+    func makeReport(for mainSequence: MainSequence) -> String {
+        return report(mainSequence)
+    }
 }
 
 func makeTestComponents() -> [Component] {
