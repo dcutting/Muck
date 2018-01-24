@@ -24,10 +24,6 @@ class DeclarationsTests: XCTestCase {
         XCTAssertEqual(4, sut.numberDeclarations)
     }
 
-    func test_abstractness_noDeclarations_throws() {
-        // sut.abstractness will fail precondition
-    }
-
     func test_abstractness() {
         sut.addAbstract(any())
         sut.addAbstract(any())
