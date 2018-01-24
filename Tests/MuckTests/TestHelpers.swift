@@ -29,6 +29,10 @@ func any() -> [Entity] {
     return []
 }
 
+func any() -> [Reporter] {
+    return []
+}
+
 func any() -> Reporter {
 
     class TestReporter: Reporter {
