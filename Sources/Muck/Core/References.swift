@@ -1,4 +1,4 @@
-struct Dependency: Hashable {
+private struct Dependency: Hashable {
 
     let dependentComponentID: ComponentID
     let dependency: EntityID
@@ -14,7 +14,7 @@ struct Dependency: Hashable {
 
 struct References {
 
-    var dependents = [Dependency: Entity]()
+    private var dependents = [Dependency: Entity]()
     var dependencies = [EntityID: (ComponentID?, Entity)]()
 
     var fanIn: Int {
