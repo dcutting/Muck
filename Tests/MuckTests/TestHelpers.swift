@@ -5,6 +5,10 @@ func any() -> String {
     return "dummy"
 }
 
+func any() -> [String] {
+    return []
+}
+
 func any() -> Bool {
     return false
 }
@@ -15,6 +19,34 @@ func any() -> Entity {
 
 func any() -> ComponentCleanlinessReporter.SortBy {
     return .name
+}
+
+func any() -> GranularityStrategy {
+
+    class TestGranularityStrategy: GranularityStrategy {
+        func findComponentID(for file: SourceFile) -> ComponentID {
+            return any()
+        }
+        var description = ""
+    }
+
+    return TestGranularityStrategy()
+}
+
+func any() -> ComponentNameStrategy {
+
+    class TestComponentNameStrategy: ComponentNameStrategy {
+        func findComponentName(for componentID: ComponentID) -> String {
+            return any()
+        }
+        var description = ""
+    }
+
+    return TestComponentNameStrategy()
+}
+
+func any() -> Raker.Arguments {
+    return Raker.Arguments(path: any(), xcodeBuildArguments: any(), moduleNames: any(), isVerbose: any(), granularityStrategy: any(), componentNameStrategy: any(), shouldIgnoreExternalDependencies: any())
 }
 
 func dummy() -> String {
