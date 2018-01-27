@@ -9,6 +9,7 @@ enum ArgumentsBuilderError: Error, LocalizedError {
     case missingScheme
     case missingTargetOrScheme
     case noModulesSpecified
+    case invalidGranularity
 
     var errorDescription: String? {
         switch self {
@@ -22,6 +23,8 @@ enum ArgumentsBuilderError: Error, LocalizedError {
             return "Missing target or scheme"
         case .noModulesSpecified:
             return "No modules specified for analysis"
+        case .invalidGranularity:
+            return "Invalid granularity specified"
         }
     }
 }
@@ -43,8 +46,8 @@ class ArgumentsBuilder {
                 parser.add(option: "--target", shortName: "-t", kind: String.self, usage: "The Xcode target (required if project is specified)")
             let modulesArg: OptionArgument<[String]> =
                 parser.add(option: "--modules", shortName: "-m", kind: [String].self, usage: "The modules to analyse (required)")
-            let byFolderArg: OptionArgument<Bool> =
-                parser.add(option: "--byFolder", shortName: "-f", kind: Bool.self, usage: "Treat folders as components (by default, modules are treated as components)")
+            let granularityArg: OptionArgument<String> =
+                parser.add(option: "--granularity", shortName: "-g", kind: String.self, usage: "How to group components, by [file|folder|module] (assumes module by default)")
             let verboseArg: OptionArgument<Bool> =
                 parser.add(option: "--verbose", shortName: "-v", kind: Bool.self, usage: "Verbose logging")
             let ignoreExternsArg: OptionArgument<Bool> =
@@ -59,9 +62,8 @@ class ArgumentsBuilder {
                                                                       schemeArg: schemeArg,
                                                                       targetArg: targetArg)
 
-            let byFolder = parsedArguments.get(byFolderArg) ?? false
-            let granularityStrategy: GranularityStrategy = byFolder ? FolderGranularityStrategy() : ModuleGranularityStrategy()
-            let componentNameStrategy: ComponentNameStrategy = byFolder ? FilePathComponentNameStrategy(rootPath: path + "/") : ModuleComponentNameStrategy()
+            let (granularityStrategy, componentNameStrategy) = try findGranularity(parsedArguments: parsedArguments, granularityArg: granularityArg, path: path)
+
             guard let moduleNames = parsedArguments.get(modulesArg) else {
                 throw ArgumentsBuilderError.noModulesSpecified
             }
@@ -148,6 +150,26 @@ class ArgumentsBuilder {
     private func findPath(forWorkspaceOrProject workspaceOrProject: String) -> String {
         let path = URL(fileURLWithPath: workspaceOrProject)
         return path.deletingLastPathComponent().path
+    }
+
+    private func findGranularity(parsedArguments: ArgumentParser.Result, granularityArg: OptionArgument<String>, path: String) throws -> (GranularityStrategy, ComponentNameStrategy) {
+        let granularity = parsedArguments.get(granularityArg) ?? "module"
+        let granularityStrategy: GranularityStrategy
+        let componentNameStrategy: ComponentNameStrategy
+        switch granularity {
+        case "file":
+            granularityStrategy = FileGranularityStrategy()
+            componentNameStrategy = FilePathComponentNameStrategy(rootPath: path + "/")
+        case "folder":
+            granularityStrategy = FolderGranularityStrategy()
+            componentNameStrategy = FilePathComponentNameStrategy(rootPath: path + "/")
+        case "module":
+            granularityStrategy = ModuleGranularityStrategy()
+            componentNameStrategy = ModuleComponentNameStrategy()
+        default:
+            throw ArgumentsBuilderError.invalidGranularity
+        }
+        return (granularityStrategy, componentNameStrategy)
     }
 
     private func exitWithUsage() -> Never {

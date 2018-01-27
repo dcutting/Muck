@@ -29,6 +29,10 @@ class ReferencesTests: XCTestCase {
         XCTAssertEqual(0.3333, sut.instability, accuracy: 0.001)
     }
 
+    func test_instability_zeroFanInOut() {
+        XCTAssertEqual(0.0, sut.instability, accuracy: 0.001)
+    }
+
     func test_addDependency_sameDependencyIsOnlyAddedOnce() {
         let entity: Entity = dummy()
         let owner: ComponentID = dummy()

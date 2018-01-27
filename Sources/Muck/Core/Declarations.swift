@@ -13,7 +13,7 @@ struct Declarations {
 
     var abstractness: Double {
         precondition(numberDeclarations >= numberAbstracts, "numberDeclarations < numberAbstracts")
-        precondition(numberDeclarations > 0, "numberDeclarations == 0")
+        guard numberDeclarations > 0 else { return 1.0 }
         return Double(numberAbstracts) / Double(numberDeclarations)
     }
 

@@ -27,7 +27,7 @@ struct References {
 
     var instability: Double {
         let fanTotal = fanIn + fanOut
-        precondition(fanTotal > 0, "fanIn + fanOut == 0")
+        guard fanTotal > 0 else { return 0.0 }
         return Double(fanOut) / Double(fanTotal)
     }
 
