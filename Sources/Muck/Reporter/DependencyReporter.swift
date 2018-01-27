@@ -21,7 +21,7 @@ class DependencyReporter: Reporter {
                 let typeName = dependency.value.1.name
                 return "  - \(componentName).\(typeName)"
             }
-            return ["\(component.name)"] + dependencies
+            return ["\(component.name)"] + dependencies.sorted()
         }
         return components.flattened().joined(separator: "\n")
     }

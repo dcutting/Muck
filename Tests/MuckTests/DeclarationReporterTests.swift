@@ -29,8 +29,8 @@ class DeclarationReporterTests: XCTestCase {
 Lorax
   - [A] GluppityGlup
   - [A] SchloppitySchlopp
-  - SwomeeSwan
   - Barbaloot
+  - SwomeeSwan
 Cat
   - Hat
 """
