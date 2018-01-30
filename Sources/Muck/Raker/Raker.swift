@@ -16,8 +16,8 @@ class Raker {
             let finder = SourceKittenFinder(path: args.path, xcodeBuildArguments: args.xcodeBuildArguments, moduleNames: args.moduleNames, isVerbose: args.isVerbose)
             let transformer = Transformer(granularityStrategy: args.granularityStrategy, componentNameStrategy: args.componentNameStrategy, shouldIgnoreExternalDependencies: args.shouldIgnoreExternalDependencies)
 
-            let files = try finder.find()
-            let components = transformer.transform(files: files)
+            let declarations = try finder.find()
+            let components = transformer.transform(declarations: declarations)
             let mainSequence = MainSequence(components: components)
 
             let reporter = CompoundReporter(reporters: [

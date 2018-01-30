@@ -15,11 +15,11 @@ class Transformer {
         self.shouldIgnoreExternalDependencies = shouldIgnoreExternalDependencies
     }
 
-    func transform(files: [Declaration]) -> [Component] {
+    func transform(declarations: [Declaration]) -> [Component] {
         reset()
-        registerDeclarations(for: files)
-        analyseAbstractness(for: files)
-        analyseStability(for: files)
+        declarations.forEach(index)
+        declarations.forEach(analyseAbstractness)
+//        declarations.forEach(analyseStability)
         return Array(components.values)
     }
 
@@ -28,72 +28,69 @@ class Transformer {
         declarationIndex.removeAll()
     }
 
-    private func registerDeclarations(for declarations: [Declaration]) {
-        for file in declarations {
-            for declaration in file.declarations {
-                guard case .declaration(let entityID) = declaration.kind else { continue }
-                let componentID = granularityStrategy.findComponentID(for: declaration)
-                declarationIndex[entityID] = componentID
-            }
-        }
+    private func index(declaration: Declaration) {
+        declaration.declarations.forEach(index)
+        guard case .declaration(let declarationID) = declaration.kind else { return }
+        let componentID = granularityStrategy.findComponentID(for: declaration)
+        declarationIndex[declarationID] = componentID
     }
 
-    private func analyseAbstractness(for files: [Declaration]) {
-        for file in files {
-            for declaration in file.declarations {
-                let componentID = granularityStrategy.findComponentID(for: declaration)
-                analyseAbstractness(for: declaration, componentID: componentID)
-            }
-        }
-    }
-
-    private func analyseAbstractness(for declaration: Declaration, componentID: ComponentID) {
-        var component = findComponent(forID: componentID)
+    private func analyseAbstractness(declaration: Declaration) {
+        declaration.declarations.forEach(analyseAbstractness)
+        guard case .declaration(let declarationID) = declaration.kind else { return }
+        var component = findComponent(for: declaration)
         if declaration.isAbstract {
-            component.declarations.addAbstract(declaration.name)
+            component.declarations.addAbstract(declarationID)
         } else {
-            component.declarations.addConcrete(declaration.name)
+            component.declarations.addConcrete(declarationID)
         }
-        components[componentID] = component
-    }
-
-    private func analyseStability(for declarations: [Declaration]) {
-        for declaration in declarations {
-            analyseStability(for: declaration)
-        }
+        components[component.componentID] = component
     }
 
     private func analyseStability(for declaration: Declaration) {
 
-        for declaration in declaration.declarations {
+        let thisComponentID = granularityStrategy.findComponentID(for: declaration)
 
-            let thisComponentID = granularityStrategy.findComponentID(for: declaration)
+        for subDeclaration in declaration.declarations {
 
-            for dependencyID in declaration.references {
+            let subComponentID = granularityStrategy.findComponentID(for: subDeclaration)
+
+            if case .declaration(let subDeclarationID) = subDeclaration.kind {
+                addDependency(componentID: subComponentID, declarationID: subDeclarationID, ownedBy: thisComponentID)
+            }
+
+            analyseStability(for: subDeclaration)
+
+            for dependencyID in subDeclaration.references {
 
                 let referencedComponentID = declarationIndex[dependencyID]
 
                 guard thisComponentID != referencedComponentID else { continue }
 
-//                updateReferenced(componentID: referencedComponentID, withDependency: reference, from: thisComponentID)
-//                updateThis(componentID: thisComponentID, withDependency: reference, ownedBy: referencedComponentID)
+                addDependent(componentID: referencedComponentID, declarationID: dependencyID, from: thisComponentID)
+                addDependency(componentID: thisComponentID, declarationID: dependencyID, ownedBy: referencedComponentID)
             }
         }
     }
 
-//    private func updateReferenced(componentID: ComponentID?, withDependency entity: Entity, from thisComponentID: ComponentID) {
-//        guard let referencedID = componentID else { return } // external declaration
-//        var referencedComponent = findComponent(forID: referencedID)
-//        referencedComponent.references.addDependency(on: entity, from: thisComponentID)
-//        components[referencedID] = referencedComponent
-//    }
-//
-//    private func updateThis(componentID: ComponentID, withDependency entity: Entity, ownedBy referencedComponentID: ComponentID?) {
-//        if referencedComponentID == nil && shouldIgnoreExternalDependencies { return }
-//        var thisComponent = findComponent(forID: componentID)
-//        thisComponent.references.addDependency(on: entity, ownedBy: referencedComponentID)
-//        components[componentID] = thisComponent
-//    }
+    private func addDependent(componentID: ComponentID?, declarationID: DeclarationID, from thisComponentID: ComponentID) {
+        guard let referencedID = componentID else { return } // external declaration
+        var referencedComponent = findComponent(forID: referencedID)
+        referencedComponent.references.addDependent(componentID: thisComponentID, declarationID: declarationID)
+        components[referencedID] = referencedComponent
+    }
+
+    private func addDependency(componentID: ComponentID, declarationID: DeclarationID, ownedBy referencedComponentID: ComponentID?) {
+        if referencedComponentID == nil && shouldIgnoreExternalDependencies { return }
+        var thisComponent = findComponent(forID: componentID)
+        thisComponent.references.addDependency(componentID: referencedComponentID, declarationID: declarationID)
+        components[componentID] = thisComponent
+    }
+
+    private func findComponent(for declaration: Declaration) -> Component {
+        let componentID = granularityStrategy.findComponentID(for: declaration)
+        return findComponent(forID: componentID)
+    }
 
     private func findComponent(forID componentID: ComponentID) -> Component {
         return components[componentID, default: makeComponent(withID: componentID)]
@@ -101,6 +98,6 @@ class Transformer {
 
     private func makeComponent(withID componentID: ComponentID) -> Component {
         let name = componentNameStrategy.findComponentName(for: componentID)
-        return Component(name: name, declarations: Declarations(), references: References())
+        return Component(componentID: componentID, name: name, declarations: Declarations(), references: References())
     }
 }

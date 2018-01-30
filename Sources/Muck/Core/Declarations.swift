@@ -1,7 +1,7 @@
 struct Declarations {
 
-    var abstracts = [String]()
-    var concretes = [String]()
+    var abstracts = [DeclarationID]()
+    var concretes = [DeclarationID]()
 
     var numberDeclarations: Int {
         return numberAbstracts + concretes.count
@@ -17,11 +17,11 @@ struct Declarations {
         return Double(numberAbstracts) / Double(numberDeclarations)
     }
 
-    mutating func addAbstract(_ name: String) {
-        abstracts.append(name)
+    mutating func addAbstract(_ declarationID: DeclarationID) {
+        abstracts.append(declarationID)
     }
 
-    mutating func addConcrete(_ name: String) {
-        concretes.append(name)
+    mutating func addConcrete(_ declarationID: DeclarationID) {
+        concretes.append(declarationID)
     }
 }

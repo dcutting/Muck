@@ -15,12 +15,11 @@ class DependencyReporter: Reporter {
         let components = mainSequence.components.map { component -> [String] in
             let dependencies = component.references.dependencies.map { dependency -> String in
                 var componentName = "<extern>"
-                if let componentID = dependency.value {
+                if let componentID = dependency.componentID {
                     componentName = componentNameStrategy.findComponentName(for: componentID)
                 }
-                return "  - \(componentName)"
-//                let typeName = dependency.value.1.name
-//                return "  - \(componentName).\(typeName)"
+                let typeName = dependency.declarationID
+                return "  - \(componentName).\(typeName)"
             }
             return ["\(component.name)"] + dependencies.sorted()
         }

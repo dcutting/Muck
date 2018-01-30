@@ -1,21 +1,22 @@
-private struct Dependency: Hashable {
+struct Dependency: Hashable {
 
-    let dependentComponentID: ComponentID
-    let dependency: DeclarationID
+    let componentID: ComponentID?
+    let declarationID: DeclarationID
 
     var hashValue: Int {
-        return dependentComponentID.hashValue ^ dependency.hashValue
+        let componentIDHashValue = componentID?.hashValue ?? 0
+        return componentIDHashValue ^ declarationID.hashValue
     }
 
     static func ==(lhs: Dependency, rhs: Dependency) -> Bool {
-        return lhs.dependentComponentID == rhs.dependentComponentID && lhs.dependency == rhs.dependency
+        return lhs.componentID == rhs.componentID && lhs.declarationID == rhs.declarationID
     }
 }
 
 struct References {
 
-    private var dependents = [Dependency: DeclarationID]()
-    var dependencies = [DeclarationID: ComponentID?]()
+    private var dependents = Set<Dependency>()
+    var dependencies = Set<Dependency>()
 
     var fanIn: Int {
         return dependents.count
@@ -31,12 +32,13 @@ struct References {
         return Double(fanOut) / Double(fanTotal)
     }
 
-    mutating func addDependency(on entityID: DeclarationID, ownedBy componentID: ComponentID?) {
-        dependencies[entityID] = componentID
+    mutating func addDependent(componentID: ComponentID, declarationID: DeclarationID) {
+        let dependency = Dependency(componentID: componentID, declarationID: declarationID)
+        dependents.insert(dependency)
     }
 
-    mutating func addDependency(on entityID: DeclarationID, from componentID: ComponentID) {
-        let dependency = Dependency(dependentComponentID: componentID, dependency: entityID)
-        dependents[dependency] = entityID
+    mutating func addDependency(componentID: ComponentID?, declarationID: DeclarationID) {
+        let dependency = Dependency(componentID: componentID, declarationID: declarationID)
+        dependencies.insert(dependency)
     }
 }
