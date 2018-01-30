@@ -30,8 +30,8 @@ class Transformer {
 
     private func registerDeclarations(for files: [SourceFile]) {
         for file in files {
-            let componentID = granularityStrategy.findComponentID(for: file)
             for declaration in file.declarations {
+                let componentID = granularityStrategy.findComponentID(for: file, entity: declaration)
                 declarations[declaration.entityID] = componentID
             }
         }
@@ -39,8 +39,8 @@ class Transformer {
 
     private func analyseAbstractness(for files: [SourceFile]) {
         for file in files {
-            let componentID = granularityStrategy.findComponentID(for: file)
             for declaration in file.declarations {
+                let componentID = granularityStrategy.findComponentID(for: file, entity: declaration)
                 analyseAbstractness(for: declaration, componentID: componentID)
             }
         }
@@ -64,9 +64,9 @@ class Transformer {
 
     private func analyseStability(for file: SourceFile) {
 
-        let thisComponentID = granularityStrategy.findComponentID(for: file)
-
         for entity in file.references {
+
+            let thisComponentID = granularityStrategy.findComponentID(for: file, entity: entity)
 
             let dependencyID = entity.entityID
             let referencedComponentID = declarations[dependencyID]

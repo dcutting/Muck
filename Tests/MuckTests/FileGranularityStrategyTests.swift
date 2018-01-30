@@ -16,6 +16,6 @@ class FileGranularityStrategyTests: XCTestCase {
     func test_findComponentID_returnsWholePath() {
         let path = "/path/to/component/file.swift"
         let sourceFile = SourceFile(path: path, module: any(), declarations: any(), references: any())
-        XCTAssertEqual("/path/to/component/file.swift", sut.findComponentID(for: sourceFile))
+        XCTAssertEqual("/path/to/component/file.swift", sut.findComponentID(for: sourceFile, entity: any()))
     }
 }

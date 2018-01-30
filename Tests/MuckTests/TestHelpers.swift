@@ -24,7 +24,7 @@ func any() -> ComponentCleanlinessReporter.SortBy {
 func any() -> GranularityStrategy {
 
     class TestGranularityStrategy: GranularityStrategy {
-        func findComponentID(for file: SourceFile) -> ComponentID {
+        func findComponentID(for file: SourceFile, entity: Entity) -> ComponentID {
             return any()
         }
         var description = ""
