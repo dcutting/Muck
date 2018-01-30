@@ -1,7 +1,7 @@
 class FileGranularityStrategy: GranularityStrategy {
 
-    func findComponentID(for file: SourceFile, entity _: Entity) -> ComponentID {
-        return file.path
+    func findComponentID(for declaration: Declaration) -> ComponentID {
+        return declaration.path
     }
 
     var description: String {

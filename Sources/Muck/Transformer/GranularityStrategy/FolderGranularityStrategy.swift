@@ -2,8 +2,8 @@ import Foundation
 
 class FolderGranularityStrategy: GranularityStrategy {
 
-    func findComponentID(for file: SourceFile, entity _: Entity) -> ComponentID {
-        let url = URL(fileURLWithPath: file.path)
+    func findComponentID(for declaration: Declaration) -> ComponentID {
+        let url = URL(fileURLWithPath: declaration.path)
         return url.deletingLastPathComponent().relativePath
     }
 

@@ -1,7 +1,7 @@
 class ModuleGranularityStrategy: GranularityStrategy {
 
-    func findComponentID(for file: SourceFile, entity _: Entity) -> ComponentID {
-        return file.module
+    func findComponentID(for declaration: Declaration) -> ComponentID {
+        return declaration.module
     }
 
     var description: String {

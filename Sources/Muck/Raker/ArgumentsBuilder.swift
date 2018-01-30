@@ -47,7 +47,7 @@ class ArgumentsBuilder {
             let modulesArg: OptionArgument<[String]> =
                 parser.add(option: "--modules", shortName: "-m", kind: [String].self, usage: "The modules to analyse (required)")
             let granularityArg: OptionArgument<String> =
-                parser.add(option: "--granularity", shortName: "-g", kind: String.self, usage: "How to group components, by [file|folder|module] (assumes module by default)")
+                parser.add(option: "--granularity", shortName: "-g", kind: String.self, usage: "How to group components, by [module|folder|file|type] (assumes module by default)")
             let verboseArg: OptionArgument<Bool> =
                 parser.add(option: "--verbose", shortName: "-v", kind: Bool.self, usage: "Verbose logging")
             let ignoreExternsArg: OptionArgument<Bool> =
@@ -157,6 +157,9 @@ class ArgumentsBuilder {
         let granularityStrategy: GranularityStrategy
         let componentNameStrategy: ComponentNameStrategy
         switch granularity {
+        case "type":
+            granularityStrategy = TypeGranularityStrategy()
+            componentNameStrategy = FilePathComponentNameStrategy(rootPath: path + "/")
         case "file":
             granularityStrategy = FileGranularityStrategy()
             componentNameStrategy = FilePathComponentNameStrategy(rootPath: path + "/")

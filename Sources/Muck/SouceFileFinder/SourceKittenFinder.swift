@@ -18,35 +18,35 @@ class SourceKittenFinder: SourceFileFinder {
         self.isVerbose = isVerbose
     }
 
-    func find() throws -> [SourceFile] {
+    func find() throws -> [Declaration] {
         return try analyse(path: path, xcodeBuildArguments: xcodeBuildArguments, moduleNames: moduleNames)
     }
 
-    private func analyse(path: String, xcodeBuildArguments: [String], moduleNames: [String]) throws -> [SourceFile] {
+    private func analyse(path: String, xcodeBuildArguments: [String], moduleNames: [String]) throws -> [Declaration] {
         return try moduleNames.map { moduleName in
             try analyse(path: path, xcodeBuildArguments: xcodeBuildArguments, moduleName: moduleName)
         }.flattened()
     }
 
-    private func analyse(path: String, xcodeBuildArguments: [String], moduleName: String) throws -> [SourceFile] {
+    private func analyse(path: String, xcodeBuildArguments: [String], moduleName: String) throws -> [Declaration] {
 
         guard let module = Module(xcodeBuildArguments: xcodeBuildArguments, name: moduleName, inPath: path) else {
             throw SourceKittenFinderError.build(name: moduleName)
         }
 
         log("Analysing module \(module.name)")
-        let sourceFiles = module.sourceFiles.map { file -> SourceFile? in
+        let sourceFiles = module.sourceFiles.map { file -> Declaration in
             log("  - \(file)")
-            return makeSourceFile(for: file, module: module.name, arguments: module.compilerArguments)
+            return makeFileDeclaration(for: file, module: module.name, arguments: module.compilerArguments)
         }
-        return sourceFiles.flatMap { $0 }
+        return sourceFiles
     }
 
-    private func makeSourceFile(for path: String, module: String, arguments: [String]) -> SourceFile? {
+    private func makeFileDeclaration(for path: String, module: String, arguments: [String]) -> Declaration {
         let sourceKitOutput = Request.index(file: path, arguments: arguments).send()
         let sourceKitEntities = findSourceKitEntities(in: sourceKitOutput)
-        guard let (declarations, references) = extractDeclarationsAndReferences(from: sourceKitEntities) else { return nil }
-        return SourceFile(path: path, module: module, declarations: declarations, references: references)
+        let (declarations, references) = extractDeclarationsAndReferences(from: sourceKitEntities, path: path, module: module)
+        return Declaration(kind: .file, path: path, module: module, name: path, isAbstract: false, declarations: declarations, references: references)
     }
 
     private func findSourceKitEntities(in sourceKitOutput: [String: SourceKitRepresentable]) -> [[String: SourceKitRepresentable]] {
@@ -54,45 +54,82 @@ class SourceKittenFinder: SourceFileFinder {
         return keyEntities.flatMap { $0 as? [String: SourceKitRepresentable] }
     }
 
-    private func extractDeclarationsAndReferences(from sourceKitEntities: [[String: SourceKitRepresentable]]) -> (declarations: [Entity], references: [Entity])? {
+    private func extractDeclarationsAndReferences(from sourceKitEntities: [[String: SourceKitRepresentable]], path: String, module: String) -> ([Declaration], [DeclarationID]) {
 
-        var declarations = [Entity]()
-        var references = [Entity]()
+        var declarations = [Declaration]()
+        var references = [DeclarationID]()
 
         for sourceKitEntity in sourceKitEntities {
 
-            if let entity = makeEntity(from: sourceKitEntity) {
-                if entity.isDeclaration {
-                    declarations.append(entity)
+            guard
+                let name = sourceKitEntity["key.name"] as? String,
+                let usr = sourceKitEntity["key.usr"] as? String,
+                let kind = sourceKitEntity["key.kind"] as? String
+                else { continue }
+
+            let isDeclaration = kind.contains(".decl.")
+
+            if isDeclaration {
+
+                let subSourceKitEntities = findSourceKitEntities(in: sourceKitEntity)
+                let (subDeclarations, subReferences) = extractDeclarationsAndReferences(from: subSourceKitEntities, path: path, module: module)
+
+                if isNonLocal(kind: kind) {
+                    let isAbstract = kind.contains(".protocol")
+                    let declarationKind = DeclarationKind.declaration(usr)
+                    let declaration = Declaration(kind: declarationKind, path: path, module: module, name: name, isAbstract: isAbstract, declarations: subDeclarations, references: subReferences)
+                    declarations.append(declaration)
                 } else {
-                    references.append(entity)
+                    declarations.append(contentsOf: subDeclarations)
+                    references.append(contentsOf: subReferences)
+                }
+            } else {
+                if isNonLocal(kind: kind) {
+                    let reference = usr // nonlocal
+                    references.append(reference)
                 }
             }
 
-            let subEntities = findSourceKitEntities(in: sourceKitEntity)
-            if let (subDeclarations, subReferences) = extractDeclarationsAndReferences(from: subEntities) {
-                declarations.append(contentsOf: subDeclarations)
-                references.append(contentsOf: subReferences)
-            }
+
+//            if let declaration = makeDeclaration(from: sourceKitEntity, path: path, module: module) {
+//                if entity.isDeclaration {
+//                    declarations.append(entity)
+//                } else {
+//                    references.append(entity)
+//                }
+//            }
+
+//            let subEntities = findSourceKitEntities(in: sourceKitEntity)
+//            let subSourceFiles = extractDeclarationsAndReferences(from: subEntities, path: path, module: module)
+////                declarations.append(contentsOf: subDeclarations)
+////                references.append(contentsOf: subReferences)
+//                sourceFiles.append(contentsOf: subSourceFiles)
+////            }
+//            }
         }
 
+//        let thisSourceFile = SourceFile(path: path, module: module, declarations: declarations, references: references)
+//        sourceFiles.append(thisSourceFile)
         return (declarations, references)
     }
 
-    private func makeEntity(from sourceKitEntity: [String: SourceKitRepresentable]) -> Entity? {
-
-        guard
-            let name = sourceKitEntity["key.name"] as? String,
-            let usr = sourceKitEntity["key.usr"] as? String,
-            let kind = sourceKitEntity["key.kind"] as? String,
-            isNonLocal(kind: kind)
-            else { return nil }
-
-        let isAbstract = kind.contains(".protocol")
-        let isDeclaration = kind.contains(".decl.")
-
-        return Entity(entityID: usr, name: name, kind: kind, isAbstract: isAbstract, isDeclaration: isDeclaration)
-    }
+//    private func makeDeclaration(from sourceKitEntity: [String: SourceKitRepresentable], path: String, module: String) -> Declaration? {
+//
+//        guard
+//            let name = sourceKitEntity["key.name"] as? String,
+//            let usr = sourceKitEntity["key.usr"] as? String,
+//            let kind = sourceKitEntity["key.kind"] as? String,
+//            isNonLocal(kind: kind)
+//            else { return nil }
+//
+//        let isAbstract = kind.contains(".protocol")
+//        let isDeclaration = kind.contains(".decl.")
+//
+//        let declarationKind = DeclarationKind.declaration(usr)
+//        let subDeclarations = [Declaration]()
+//        let references = [DeclarationID]()
+//        return Declaration(kind: declarationKind, path: path, module: module, name: name, isAbstract: isAbstract, declarations: subDeclarations, references: references)
+//    }
 
     private func isNonLocal(kind: String) -> Bool {
 

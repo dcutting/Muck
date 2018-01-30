@@ -1,7 +1,7 @@
 private struct Dependency: Hashable {
 
     let dependentComponentID: ComponentID
-    let dependency: EntityID
+    let dependency: DeclarationID
 
     var hashValue: Int {
         return dependentComponentID.hashValue ^ dependency.hashValue
@@ -14,8 +14,8 @@ private struct Dependency: Hashable {
 
 struct References {
 
-    private var dependents = [Dependency: Entity]()
-    var dependencies = [EntityID: (ComponentID?, Entity)]()
+    private var dependents = [Dependency: DeclarationID]()
+    var dependencies = [DeclarationID: ComponentID?]()
 
     var fanIn: Int {
         return dependents.count
@@ -31,12 +31,12 @@ struct References {
         return Double(fanOut) / Double(fanTotal)
     }
 
-    mutating func addDependency(on entity: Entity, ownedBy componentID: ComponentID?) {
-        dependencies[entity.entityID] = (componentID, entity)
+    mutating func addDependency(on entityID: DeclarationID, ownedBy componentID: ComponentID?) {
+        dependencies[entityID] = componentID
     }
 
-    mutating func addDependency(on entity: Entity, from componentID: ComponentID) {
-        let dependency = Dependency(dependentComponentID: componentID, dependency: entity.entityID)
-        dependents[dependency] = entity
+    mutating func addDependency(on entityID: DeclarationID, from componentID: ComponentID) {
+        let dependency = Dependency(dependentComponentID: componentID, dependency: entityID)
+        dependents[dependency] = entityID
     }
 }

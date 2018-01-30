@@ -1,20 +1,20 @@
 protocol SourceFileFinder {
-    func find() throws -> [SourceFile]
+    func find() throws -> [Declaration]
 }
 
-struct SourceFile {
+enum DeclarationKind {
+    case declaration(DeclarationID)
+    case file
+}
+
+struct Declaration {
+    let kind: DeclarationKind
     let path: String
     let module: String
-    let declarations: [Entity]
-    let references: [Entity]
-}
-
-struct Entity {
-    let entityID: EntityID
     let name: String
-    let kind: String
     let isAbstract: Bool
-    let isDeclaration: Bool
+    let declarations: [Declaration]
+    let references: [DeclarationID]
 }
 
-typealias EntityID = String
+typealias DeclarationID = String
