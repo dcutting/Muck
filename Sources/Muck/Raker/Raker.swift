@@ -23,6 +23,7 @@ class Raker {
             let reporter = CompoundReporter(reporters: [
                 DeclarationReporter(),
                 DependencyReporter(),
+                DotDependencyReporter(),
                 ComponentCleanlinessReporter(sortBy: .distance),
                 OverallCleanlinessReporter()
                 ])
