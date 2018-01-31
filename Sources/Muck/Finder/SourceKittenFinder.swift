@@ -85,51 +85,13 @@ class SourceKittenFinder: Finder {
                 }
             } else {
                 if isNonLocal(kind: kind) {
-                    let reference = usr // nonlocal
+                    let reference = usr
                     references.append(reference)
                 }
             }
-
-
-//            if let declaration = makeDeclaration(from: sourceKitEntity, path: path, module: module) {
-//                if entity.isDeclaration {
-//                    declarations.append(entity)
-//                } else {
-//                    references.append(entity)
-//                }
-//            }
-
-//            let subEntities = findSourceKitEntities(in: sourceKitEntity)
-//            let subSourceFiles = extractDeclarationsAndReferences(from: subEntities, path: path, module: module)
-////                declarations.append(contentsOf: subDeclarations)
-////                references.append(contentsOf: subReferences)
-//                sourceFiles.append(contentsOf: subSourceFiles)
-////            }
-//            }
         }
-
-//        let thisSourceFile = SourceFile(path: path, module: module, declarations: declarations, references: references)
-//        sourceFiles.append(thisSourceFile)
         return (declarations, references)
     }
-
-//    private func makeDeclaration(from sourceKitEntity: [String: SourceKitRepresentable], path: String, module: String) -> Declaration? {
-//
-//        guard
-//            let name = sourceKitEntity["key.name"] as? String,
-//            let usr = sourceKitEntity["key.usr"] as? String,
-//            let kind = sourceKitEntity["key.kind"] as? String,
-//            isNonLocal(kind: kind)
-//            else { return nil }
-//
-//        let isAbstract = kind.contains(".protocol")
-//        let isDeclaration = kind.contains(".decl.")
-//
-//        let declarationKind = DeclarationKind.declaration(usr)
-//        let subDeclarations = [Declaration]()
-//        let references = [DeclarationID]()
-//        return Declaration(kind: declarationKind, path: path, module: module, name: name, isAbstract: isAbstract, declarations: subDeclarations, references: references)
-//    }
 
     private func isNonLocal(kind: String) -> Bool {
 
