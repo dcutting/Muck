@@ -19,7 +19,7 @@ class Transformer {
         reset()
         declarations.forEach(index)
         declarations.forEach(analyseAbstractness)
-//        declarations.forEach(analyseStability)
+        declarations.forEach(analyseStability)
         return Array(components.values)
     }
 
@@ -48,35 +48,41 @@ class Transformer {
     }
 
     private func analyseStability(for declaration: Declaration) {
+        analyseStability(for: declaration, parent: nil)
+    }
+
+    private func analyseStability(for declaration: Declaration, parent: DeclarationID?) {
+
+        if case .declaration(let declarationID) = declaration.kind {
+            declaration.declarations.forEach {
+                analyseStability(for: $0, parent: declarationID)
+            }
+        } else {
+            declaration.declarations.forEach(analyseStability)
+            return
+        }
 
         let thisComponentID = granularityStrategy.findComponentID(for: declaration)
 
-        for subDeclaration in declaration.declarations {
+        if let parent = parent, case .declaration(let declarationID) = declaration.kind {
+            addDependency(componentID: parent, declarationID: declarationID, ownedBy: thisComponentID)
+        }
 
-            let subComponentID = granularityStrategy.findComponentID(for: subDeclaration)
+        for dependencyID in declaration.references {
 
-            if case .declaration(let subDeclarationID) = subDeclaration.kind {
-                addDependency(componentID: subComponentID, declarationID: subDeclarationID, ownedBy: thisComponentID)
-            }
+            let referencedComponentID = declarationIndex[dependencyID]
 
-            analyseStability(for: subDeclaration)
+            guard thisComponentID != referencedComponentID else { continue }
 
-            for dependencyID in subDeclaration.references {
-
-                let referencedComponentID = declarationIndex[dependencyID]
-
-                guard thisComponentID != referencedComponentID else { continue }
-
-                addDependent(componentID: referencedComponentID, declarationID: dependencyID, from: thisComponentID)
-                addDependency(componentID: thisComponentID, declarationID: dependencyID, ownedBy: referencedComponentID)
-            }
+            addDependent(componentID: referencedComponentID, declarationID: dependencyID, from: thisComponentID)
+            addDependency(componentID: thisComponentID, declarationID: dependencyID, ownedBy: referencedComponentID)
         }
     }
 
     private func addDependent(componentID: ComponentID?, declarationID: DeclarationID, from thisComponentID: ComponentID) {
         guard let referencedID = componentID else { return } // external declaration
         var referencedComponent = findComponent(forID: referencedID)
-        referencedComponent.references.addDependent(componentID: thisComponentID, declarationID: declarationID)
+        referencedComponent.references.addDependent(componentID: referencedID, declarationID: declarationID)
         components[referencedID] = referencedComponent
     }
 
