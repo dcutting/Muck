@@ -10,9 +10,9 @@ class CompoundReporter: Reporter {
         self.reporters = reporters
     }
 
-    func makeReport(for mainSequence: MainSequence, declarations: [Declaration]) -> String {
+    func makeReport(for mainSequence: MainSequence) -> String {
         return reporters.map {
-            "# \($0.name)\n" + $0.makeReport(for: mainSequence, declarations: declarations)
+            "# \($0.name)\n" + $0.makeReport(for: mainSequence)
         }.joined(separator: "\n-----\n")
     }
 }

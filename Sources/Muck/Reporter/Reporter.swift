@@ -1,6 +1,6 @@
 protocol Reporter {
     var name: String { get }
-    func makeReport(for: MainSequence, declarations: [Declaration]) -> String
+    func makeReport(for: MainSequence) -> String
 }
 
 extension Reporter {

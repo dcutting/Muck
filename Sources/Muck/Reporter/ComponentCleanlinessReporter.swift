@@ -15,7 +15,7 @@ class ComponentCleanlinessReporter: Reporter {
         self.sortBy = sortBy
     }
 
-    func makeReport(for mainSequence: MainSequence, declarations: [Declaration]) -> String {
+    func makeReport(for mainSequence: MainSequence) -> String {
         let components = mainSequence.components.sorted {
             switch sortBy {
             case .name:

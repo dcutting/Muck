@@ -1,6 +1,7 @@
 struct MainSequence {
 
     let components: [Component]
+    let declarations: [Declaration]
 }
 
 extension MainSequence {

@@ -18,7 +18,7 @@ class Raker {
 
             let declarations = try finder.find()
             let components = transformer.transform(declarations: declarations)
-            let mainSequence = MainSequence(components: components)
+            let mainSequence = MainSequence(components: components, declarations: declarations)
 
             let reporter = CompoundReporter(reporters: [
                 DeclarationReporter(),
@@ -26,7 +26,7 @@ class Raker {
                 ComponentCleanlinessReporter(sortBy: .distance),
                 OverallCleanlinessReporter()
                 ])
-            print(reporter.makeReport(for: mainSequence, declarations: declarations))
+            print(reporter.makeReport(for: mainSequence))
 
         } catch SourceKittenFinderError.build(let name) {
             printStdErr("Error: Could not build specified workspace/scheme or project/scheme/target, or could not find module \(name)")
