@@ -1,6 +1,4 @@
-protocol SourceFileFinder {
-    func find() throws -> [Declaration]
-}
+typealias DeclarationID = String
 
 enum DeclarationKind {
     case declaration(DeclarationID)
@@ -16,5 +14,3 @@ struct Declaration {
     let declarations: [Declaration]
     let references: [DeclarationID]
 }
-
-typealias DeclarationID = String

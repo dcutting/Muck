@@ -4,7 +4,7 @@ enum SourceKittenFinderError: Error {
     case build(name: String)
 }
 
-class SourceKittenFinder: SourceFileFinder {
+class SourceKittenFinder: Finder {
 
     private let path: String
     private let xcodeBuildArguments: [String]
