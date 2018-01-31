@@ -26,8 +26,8 @@ I speak for the trees: ABCDEF
 We can have lots of good fun that is funny: ABCDEF
 """
         let mainSequence = MainSequence(components: [
-            Component(name: "ABC", declarations: any(), references: any()),
-            Component(name: "DEF", declarations: any(), references: any())
+            Component(componentID: "abc", name: "ABC", declarations: any(), references: any()),
+            Component(componentID: "def", name: "DEF", declarations: any(), references: any())
             ])
         let actual = sut.makeReport(for: mainSequence)
         XCTAssertEqual(expected, actual)

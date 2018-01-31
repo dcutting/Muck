@@ -10,8 +10,8 @@ class ModuleGranularityStrategyTests: XCTestCase {
     }
 
     func test_findComponentID_returnsModuleName() {
-        let sourceFile = SourceFile(path: any(), module: "my_module", declarations: any(), references: any())
-        XCTAssertEqual("my_module", sut.findComponentID(for: sourceFile, entity: any()))
+        let declaration = Declaration(kind: any(), path: any(), module: "my_module", name: any(), isAbstract: any(), declarations: any(), references: any())
+        XCTAssertEqual("my_module", sut.findComponentID(for: declaration))
     }
 
     func test_description() {

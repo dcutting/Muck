@@ -16,11 +16,11 @@ class DeclarationReporterTests: XCTestCase {
         loraxDeclarations.addAbstract("SchloppitySchlopp")
         loraxDeclarations.addConcrete("SwomeeSwan")
         loraxDeclarations.addConcrete("Barbaloot")
-        let lorax = Component(name: "Lorax", declarations: loraxDeclarations, references: any())
+        let lorax = Component(componentID: dummy(), name: "Lorax", declarations: loraxDeclarations, references: any())
 
         var catDeclarations = Declarations()
         catDeclarations.addConcrete("Hat")
-        let cat = Component(name: "Cat", declarations: catDeclarations, references: any())
+        let cat = Component(componentID: dummy(), name: "Cat", declarations: catDeclarations, references: any())
 
         let components = [lorax, cat]
         let mainSequence = MainSequence(components: components)

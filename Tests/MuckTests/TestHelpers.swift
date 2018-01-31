@@ -13,8 +13,12 @@ func any() -> Bool {
     return false
 }
 
-func any() -> Entity {
-    return Entity(entityID: any(), name: any(), kind: any(), isAbstract: any(), isDeclaration: any())
+func any() -> DeclarationKind {
+    return .file
+}
+
+func any() -> Declaration {
+    return Declaration(kind: any(), path: any(), module: any(), name: any(), isAbstract: any(), declarations: any(), references: any())
 }
 
 func any() -> ComponentCleanlinessReporter.SortBy {
@@ -24,7 +28,7 @@ func any() -> ComponentCleanlinessReporter.SortBy {
 func any() -> GranularityStrategy {
 
     class TestGranularityStrategy: GranularityStrategy {
-        func findComponentID(for file: SourceFile, entity: Entity) -> ComponentID {
+        func findComponentID(for declaration: Declaration) -> ComponentID {
             return any()
         }
         var description = ""
@@ -53,11 +57,11 @@ func dummy() -> String {
     return UUID().uuidString
 }
 
-func dummy() -> Entity {
-    return Entity(entityID: dummy(), name: any(), kind: any(), isAbstract: any(), isDeclaration: any())
+func dummy() -> Declaration {
+    return Declaration(kind: .declaration(dummy()), path: any(), module: any(), name: any(), isAbstract: any(), declarations: any(), references: any())
 }
 
-func any() -> [Entity] {
+func any() -> [Declaration] {
     return []
 }
 
@@ -101,22 +105,22 @@ func makeTestComponents() -> [Component] {
     var fooDeclarations = Declarations()
     fooDeclarations.addConcrete(dummy())
     var fooReferences = References()
-    fooReferences.addDependency(on: dummy(), ownedBy: dummy())
-    fooReferences.addDependency(on: dummy(), ownedBy: dummy())
-    fooReferences.addDependency(on: dummy(), ownedBy: dummy())
-    fooReferences.addDependency(on: dummy(), ownedBy: dummy())
-    fooReferences.addDependency(on: dummy(), ownedBy: dummy())
-    fooReferences.addDependency(on: dummy(), ownedBy: dummy())
-    fooReferences.addDependency(on: dummy(), ownedBy: dummy())
-    fooReferences.addDependency(on: dummy(), ownedBy: dummy())
-    fooReferences.addDependency(on: dummy(), ownedBy: dummy())
-    fooReferences.addDependency(on: dummy(), from: dummy())
-    fooReferences.addDependency(on: dummy(), from: dummy())
-    fooReferences.addDependency(on: dummy(), from: dummy())
-    fooReferences.addDependency(on: dummy(), from: dummy())
-    fooReferences.addDependency(on: dummy(), from: dummy())
-    fooReferences.addDependency(on: dummy(), from: dummy())
-    fooReferences.addDependency(on: dummy(), from: dummy())
+    fooReferences.addDependency(componentID: dummy(), declarationID: dummy())
+    fooReferences.addDependency(componentID: dummy(), declarationID: dummy())
+    fooReferences.addDependency(componentID: dummy(), declarationID: dummy())
+    fooReferences.addDependency(componentID: dummy(), declarationID: dummy())
+    fooReferences.addDependency(componentID: dummy(), declarationID: dummy())
+    fooReferences.addDependency(componentID: dummy(), declarationID: dummy())
+    fooReferences.addDependency(componentID: dummy(), declarationID: dummy())
+    fooReferences.addDependency(componentID: dummy(), declarationID: dummy())
+    fooReferences.addDependency(componentID: dummy(), declarationID: dummy())
+    fooReferences.addDependent(componentID: dummy(), declarationID: dummy())
+    fooReferences.addDependent(componentID: dummy(), declarationID: dummy())
+    fooReferences.addDependent(componentID: dummy(), declarationID: dummy())
+    fooReferences.addDependent(componentID: dummy(), declarationID: dummy())
+    fooReferences.addDependent(componentID: dummy(), declarationID: dummy())
+    fooReferences.addDependent(componentID: dummy(), declarationID: dummy())
+    fooReferences.addDependent(componentID: dummy(), declarationID: dummy())
 
     var barDeclarations = Declarations()
     barDeclarations.addAbstract(dummy())
@@ -124,10 +128,10 @@ func makeTestComponents() -> [Component] {
     barDeclarations.addConcrete(dummy())
     barDeclarations.addConcrete(dummy())
     var barReferences = References()
-    barReferences.addDependency(on: dummy(), ownedBy: dummy())
-    barReferences.addDependency(on: dummy(), ownedBy: dummy())
-    barReferences.addDependency(on: dummy(), ownedBy: dummy())
-    barReferences.addDependency(on: dummy(), from: dummy())
+    barReferences.addDependency(componentID: dummy(), declarationID: dummy())
+    barReferences.addDependency(componentID: dummy(), declarationID: dummy())
+    barReferences.addDependency(componentID: dummy(), declarationID: dummy())
+    barReferences.addDependent(componentID: dummy(), declarationID: dummy())
 
     var bazDeclarations = Declarations()
     bazDeclarations.addAbstract(dummy())
@@ -136,13 +140,13 @@ func makeTestComponents() -> [Component] {
     bazDeclarations.addConcrete(dummy())
     bazDeclarations.addConcrete(dummy())
     var bazReferences = References()
-    bazReferences.addDependency(on: dummy(), from: dummy())
-    bazReferences.addDependency(on: dummy(), from: dummy())
+    bazReferences.addDependent(componentID: dummy(), declarationID: dummy())
+    bazReferences.addDependent(componentID: dummy(), declarationID: dummy())
 
     let components = [
-        Component(name: "Foo", declarations: fooDeclarations, references: fooReferences),
-        Component(name: "Bar", declarations: barDeclarations, references: barReferences),
-        Component(name: "Baz", declarations: bazDeclarations, references: bazReferences)
+        Component(componentID: "foo", name: "Foo", declarations: fooDeclarations, references: fooReferences),
+        Component(componentID: "bar", name: "Bar", declarations: barDeclarations, references: barReferences),
+        Component(componentID: "baz", name: "Baz", declarations: bazDeclarations, references: bazReferences)
     ]
 
     return components

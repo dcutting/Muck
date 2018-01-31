@@ -11,8 +11,8 @@ class FolderGranularityStrategyTests: XCTestCase {
 
     func test_findComponentID_returnsDeepestPath() {
         let path = "/path/to/component/file.swift"
-        let sourceFile = SourceFile(path: path, module: any(), declarations: any(), references: any())
-        XCTAssertEqual("/path/to/component", sut.findComponentID(for: sourceFile, entity: any()))
+        let declaration = Declaration(kind: any(), path: path, module: any(), name: any(), isAbstract: any(), declarations: any(), references: any())
+        XCTAssertEqual("/path/to/component", sut.findComponentID(for: declaration))
     }
 
     func test_description() {
