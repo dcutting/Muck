@@ -11,7 +11,7 @@ class DependencyReporter: Reporter {
                 let referencedComponent = mainSequence.components.first { $0.componentID == dependency.componentID }
                 let componentName = referencedComponent?.name ?? "<extern>"
                 let dependencyID = dependency.declarationID
-                return "  - [\(componentName)] \(mainSequence.declarations.findName(for: dependencyID))"
+                return "  - \(componentName)::\(mainSequence.declarations.findName(for: dependencyID))"
             }
             return ["\(component.name)"] + dependencies.sorted()
         }

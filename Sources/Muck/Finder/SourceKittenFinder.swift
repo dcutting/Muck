@@ -54,7 +54,7 @@ class SourceKittenFinder: Finder {
         return keyEntities.flatMap { $0 as? [String: SourceKitRepresentable] }
     }
 
-    private func extractDeclarationsAndReferences(from sourceKitEntities: [[String: SourceKitRepresentable]], path: String, module: String) -> ([Declaration], [DeclarationID]) {
+    private func extractDeclarationsAndReferences(from sourceKitEntities: [[String: SourceKitRepresentable]], path: String, module: String, accumulatedNames: [String] = []) -> ([Declaration], [DeclarationID]) {
 
         var declarations = [Declaration]()
         var references = [DeclarationID]()
@@ -67,17 +67,20 @@ class SourceKittenFinder: Finder {
                 let kind = sourceKitEntity["key.kind"] as? String
                 else { continue }
 
+            let updatedAccumulatedNames = accumulatedNames + [name]
+
             let isDeclaration = kind.contains(".decl.")
 
             if isDeclaration {
 
                 let subSourceKitEntities = findSourceKitEntities(in: sourceKitEntity)
-                let (subDeclarations, subReferences) = extractDeclarationsAndReferences(from: subSourceKitEntities, path: path, module: module)
+                let (subDeclarations, subReferences) = extractDeclarationsAndReferences(from: subSourceKitEntities, path: path, module: module, accumulatedNames: updatedAccumulatedNames)
 
                 if isNonLocal(kind: kind) {
                     let isAbstract = kind.contains(".protocol")
                     let declarationKind = DeclarationKind.declaration(usr)
-                    let declaration = Declaration(kind: declarationKind, path: path, module: module, name: name, isAbstract: isAbstract, declarations: subDeclarations, references: subReferences)
+                    let compoundName = updatedAccumulatedNames.joined(separator: ".")
+                    let declaration = Declaration(kind: declarationKind, path: path, module: module, name: compoundName, isAbstract: isAbstract, declarations: subDeclarations, references: subReferences)
                     declarations.append(declaration)
                 } else {
                     declarations.append(contentsOf: subDeclarations)
