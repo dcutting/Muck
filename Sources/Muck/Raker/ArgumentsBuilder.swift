@@ -159,13 +159,13 @@ class ArgumentsBuilder {
         switch granularity {
         case "type":
             granularityStrategy = TypeGranularityStrategy()
-            componentNameStrategy = CommonPrefixComponentNameStrategy(rootPath: path + "/")
+            componentNameStrategy = makeStrippedComponentNameStrategy(path: path)
         case "file":
             granularityStrategy = FileGranularityStrategy()
-            componentNameStrategy = CommonPrefixComponentNameStrategy(rootPath: path + "/")
+            componentNameStrategy = makeStrippedComponentNameStrategy(path: path)
         case "folder":
             granularityStrategy = FolderGranularityStrategy()
-            componentNameStrategy = CommonPrefixComponentNameStrategy(rootPath: path + "/")
+            componentNameStrategy = makeStrippedComponentNameStrategy(path: path)
         case "module":
             granularityStrategy = ModuleGranularityStrategy()
             componentNameStrategy = IdentityComponentNameStrategy()
@@ -173,6 +173,10 @@ class ArgumentsBuilder {
             throw ArgumentsBuilderError.invalidGranularity
         }
         return (granularityStrategy, componentNameStrategy)
+    }
+
+    private func makeStrippedComponentNameStrategy(path: String) -> ComponentNameStrategy {
+        return StrippedComponentNameStrategy(prefix: path + "/", suffix: ".swift")
     }
 
     private func exitWithUsage() -> Never {

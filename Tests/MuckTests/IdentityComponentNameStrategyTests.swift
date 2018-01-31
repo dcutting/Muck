@@ -1,7 +1,7 @@
 import XCTest
 @testable import Muck
 
-class ModuleComponentNameStrategyTests: XCTestCase {
+class IdentityComponentNameStrategyTests: XCTestCase {
 
     var sut: IdentityComponentNameStrategy!
 
