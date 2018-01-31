@@ -1,23 +1,15 @@
 class DependencyReporter: Reporter {
 
-    private let componentNameStrategy: ComponentNameStrategy
-
     var name: String {
         return "Dependencies"
-    }
-
-    init(componentNameStrategy: ComponentNameStrategy) {
-        self.componentNameStrategy = componentNameStrategy
     }
 
     func makeReport(for mainSequence: MainSequence) -> String {
 
         let components = mainSequence.components.map { component -> [String] in
             let dependencies = component.references.dependencies.map { dependency -> String in
-                var componentName = "<extern>"
-                if let componentID = dependency.componentID {
-                    componentName = componentNameStrategy.findComponentName(for: componentID)
-                }
+                let referencedComponent = mainSequence.components.first { $0.componentID == dependency.componentID }
+                let componentName = referencedComponent?.name ?? "<extern>"
                 let typeName = dependency.declarationID
                 return "  - \(componentName).\(typeName)"
             }

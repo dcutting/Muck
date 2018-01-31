@@ -22,7 +22,7 @@ class Raker {
 
             let reporter = CompoundReporter(reporters: [
                 DeclarationReporter(),
-                DependencyReporter(componentNameStrategy: args.componentNameStrategy),
+                DependencyReporter(),
                 ComponentCleanlinessReporter(sortBy: .distance),
                 OverallCleanlinessReporter()
                 ])
