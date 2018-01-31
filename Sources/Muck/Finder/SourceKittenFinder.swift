@@ -1,6 +1,8 @@
+import Foundation
 import SourceKittenFramework
 
 enum SourceKittenFinderError: Error {
+    case path(String)
     case build(name: String)
 }
 
@@ -30,6 +32,9 @@ class SourceKittenFinder: Finder {
 
     private func analyse(path: String, xcodeBuildArguments: [String], moduleName: String) throws -> [Declaration] {
 
+        guard FileManager.default.fileExists(atPath: path) else {
+            throw SourceKittenFinderError.path(path)
+        }
         guard let module = Module(xcodeBuildArguments: xcodeBuildArguments, name: moduleName, inPath: path) else {
             throw SourceKittenFinderError.build(name: moduleName)
         }

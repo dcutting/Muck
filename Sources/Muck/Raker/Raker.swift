@@ -30,6 +30,8 @@ class Raker {
 
         } catch SourceKittenFinderError.build(let name) {
             printStdErr("Error: Could not build specified workspace/scheme or project/scheme/target, or could not find module \(name)")
+        } catch SourceKittenFinderError.path(let path) {
+            printStdErr("Error: \(path) does not exist")
         } catch {
             printStdErr(error.localizedDescription)
         }
