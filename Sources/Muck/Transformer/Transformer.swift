@@ -65,7 +65,10 @@ class Transformer {
         let thisComponentID = granularityStrategy.findComponentID(for: declaration)
 
         if let parent = parent, case .declaration(let declarationID) = declaration.kind {
-            addDependency(componentID: parent, declarationID: declarationID, ownedBy: thisComponentID)
+
+            if nil != components[parent] {
+                addDependency(componentID: parent, declarationID: declarationID, ownedBy: thisComponentID)
+            }
         }
 
         for dependencyID in declaration.references {
