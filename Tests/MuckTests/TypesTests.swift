@@ -1,7 +1,7 @@
 import XCTest
 @testable import Muck
 
-class DeclarationsTests: XCTestCase {
+class TypesTests: XCTestCase {
 
     var sut: Types!
 
