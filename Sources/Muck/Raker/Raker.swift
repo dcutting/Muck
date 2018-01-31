@@ -26,7 +26,7 @@ class Raker {
                 ComponentCleanlinessReporter(sortBy: .distance),
                 OverallCleanlinessReporter()
                 ])
-            print(reporter.makeReport(for: mainSequence))
+            print(reporter.makeReport(for: mainSequence, declarations: declarations))
 
         } catch SourceKittenFinderError.build(let name) {
             printStdErr("Error: Could not build specified workspace/scheme or project/scheme/target, or could not find module \(name)")

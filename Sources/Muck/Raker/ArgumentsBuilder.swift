@@ -159,7 +159,7 @@ class ArgumentsBuilder {
         switch granularity {
         case "type":
             granularityStrategy = TypeGranularityStrategy()
-            componentNameStrategy = makeStrippedComponentNameStrategy(path: path)
+            componentNameStrategy = IdentityComponentNameStrategy()
         case "file":
             granularityStrategy = FileGranularityStrategy()
             componentNameStrategy = makeStrippedComponentNameStrategy(path: path)

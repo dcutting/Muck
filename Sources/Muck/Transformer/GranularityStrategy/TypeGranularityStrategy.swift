@@ -1,12 +1,7 @@
 class TypeGranularityStrategy: GranularityStrategy {
 
     func findComponentID(for declaration: Declaration) -> ComponentID {
-        switch declaration.kind {
-        case .file:
-            return declaration.path
-        case .declaration(let entityID):
-            return entityID
-        }
+        return "\(declaration.module).\(declaration.name)"
     }
 
     var description: String {

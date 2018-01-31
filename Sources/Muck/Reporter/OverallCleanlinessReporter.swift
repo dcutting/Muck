@@ -4,7 +4,7 @@ class OverallCleanlinessReporter: Reporter {
         return "Overall Cleanliness"
     }
 
-    func makeReport(for mainSequence: MainSequence) -> String {
+    func makeReport(for mainSequence: MainSequence, declarations: [Declaration]) -> String {
         guard
             let mean = mainSequence.mean,
             let median = mainSequence.median,
