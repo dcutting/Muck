@@ -26,13 +26,13 @@ class DeclarationReporterTests: XCTestCase {
         let mainSequence = MainSequence(components: components, declarations: any())
         let actual = sut.makeReport(for: mainSequence)
         let expected = """
+Cat
+  - Hat
 Lorax
   - [A] GluppityGlup
   - [A] SchloppitySchlopp
   - Barbaloot
   - SwomeeSwan
-Cat
-  - Hat
 """
         XCTAssertEqual(expected, actual)
     }

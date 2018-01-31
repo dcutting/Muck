@@ -6,7 +6,8 @@ class DependencyReporter: Reporter {
 
     func makeReport(for mainSequence: MainSequence) -> String {
 
-        let components = mainSequence.components.map { component -> [String] in
+        let components = mainSequence.components.sorted { $0.name < $1.name }
+        let componentReport = components.map { component -> [String] in
             let dependencies = component.references.dependencies.map { dependency -> String in
                 let referencedComponent = mainSequence.components.first { $0.componentID == dependency.componentID }
                 let componentName = referencedComponent?.name ?? "<extern>"
@@ -15,6 +16,6 @@ class DependencyReporter: Reporter {
             }
             return ["\(component.name)"] + dependencies.sorted()
         }
-        return components.flattened().joined(separator: "\n")
+        return componentReport.flattened().joined(separator: "\n")
     }
 }
