@@ -6,8 +6,8 @@ class Transformer {
     private let componentNameStrategy: ComponentNameStrategy
     private let shouldIgnoreExternalDependencies: Bool
 
-    private var components = [ComponentID: Component]()
     private var declarationIndex = [DeclarationID: ComponentID]()
+    private var components = [ComponentID: Component]()
 
     init(granularityStrategy: GranularityStrategy, componentNameStrategy: ComponentNameStrategy, shouldIgnoreExternalDependencies: Bool) {
         self.granularityStrategy = granularityStrategy
@@ -18,6 +18,7 @@ class Transformer {
     func transform(declarations: [Declaration]) -> [Component] {
         reset()
         declarations.forEach(index)
+        declarationIndex.values.forEach(makeComponent)
         declarations.forEach(analyseAbstractness)
         declarations.forEach(analyseStability)
         return Array(components.values)
@@ -33,6 +34,10 @@ class Transformer {
         guard case .declaration(let declarationID) = declaration.kind else { return }
         let componentID = granularityStrategy.findComponentID(for: declaration)
         declarationIndex[declarationID] = componentID
+    }
+
+    private func makeComponent(with componentID: ComponentID) {
+        components[componentID] = makeComponent(withID: componentID)
     }
 
     private func analyseAbstractness(declaration: Declaration) {

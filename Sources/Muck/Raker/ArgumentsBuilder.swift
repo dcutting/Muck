@@ -159,16 +159,16 @@ class ArgumentsBuilder {
         switch granularity {
         case "type":
             granularityStrategy = TypeGranularityStrategy()
-            componentNameStrategy = FilePathComponentNameStrategy(rootPath: path + "/")
+            componentNameStrategy = CommonPrefixComponentNameStrategy(rootPath: path + "/")
         case "file":
             granularityStrategy = FileGranularityStrategy()
-            componentNameStrategy = FilePathComponentNameStrategy(rootPath: path + "/")
+            componentNameStrategy = CommonPrefixComponentNameStrategy(rootPath: path + "/")
         case "folder":
             granularityStrategy = FolderGranularityStrategy()
-            componentNameStrategy = FilePathComponentNameStrategy(rootPath: path + "/")
+            componentNameStrategy = CommonPrefixComponentNameStrategy(rootPath: path + "/")
         case "module":
             granularityStrategy = ModuleGranularityStrategy()
-            componentNameStrategy = ModuleComponentNameStrategy()
+            componentNameStrategy = IdentityComponentNameStrategy()
         default:
             throw ArgumentsBuilderError.invalidGranularity
         }

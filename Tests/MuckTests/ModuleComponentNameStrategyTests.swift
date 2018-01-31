@@ -3,10 +3,10 @@ import XCTest
 
 class ModuleComponentNameStrategyTests: XCTestCase {
 
-    var sut: ModuleComponentNameStrategy!
+    var sut: IdentityComponentNameStrategy!
 
     override func setUp() {
-        sut = ModuleComponentNameStrategy()
+        sut = IdentityComponentNameStrategy()
     }
 
     func test_findComponentName_returnsComponentID() {
@@ -14,6 +14,6 @@ class ModuleComponentNameStrategyTests: XCTestCase {
     }
 
     func test_description() {
-        XCTAssertEqual("take component names from modules", sut.description)
+        XCTAssertEqual("use component IDs as names", sut.description)
     }
 }

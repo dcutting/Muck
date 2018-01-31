@@ -1,4 +1,4 @@
-class FilePathComponentNameStrategy: ComponentNameStrategy {
+class CommonPrefixComponentNameStrategy: ComponentNameStrategy {
 
     private let rootPath: String
 
@@ -15,6 +15,6 @@ class FilePathComponentNameStrategy: ComponentNameStrategy {
     }
 
     var description: String {
-        return "take component names from file paths"
+        return "take component names by stripping common prefix"
     }
 }

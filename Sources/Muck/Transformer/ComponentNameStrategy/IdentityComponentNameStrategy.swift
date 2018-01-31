@@ -1,9 +1,10 @@
-class ModuleComponentNameStrategy: ComponentNameStrategy {
+class IdentityComponentNameStrategy: ComponentNameStrategy {
+
     func findComponentName(for componentID: ComponentID) -> String {
         return componentID
     }
 
     var description: String {
-        return "take component names from modules"
+        return "use component IDs as names"
     }
 }
