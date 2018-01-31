@@ -40,9 +40,9 @@ class Transformer {
         guard case .declaration(let declarationID) = declaration.kind else { return }
         var component = findComponent(for: declaration)
         if declaration.isAbstract {
-            component.declarations.addAbstract(declarationID)
+            component.types.addAbstract(declarationID)
         } else {
-            component.declarations.addConcrete(declarationID)
+            component.types.addConcrete(declarationID)
         }
         components[component.componentID] = component
     }
@@ -107,6 +107,6 @@ class Transformer {
 
     private func makeComponent(withID componentID: ComponentID) -> Component {
         let name = componentNameStrategy.findComponentName(for: componentID)
-        return Component(componentID: componentID, name: name, declarations: Declarations(), references: References())
+        return Component(componentID: componentID, name: name, types: Types(), references: References())
     }
 }

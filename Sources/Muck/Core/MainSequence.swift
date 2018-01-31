@@ -25,6 +25,6 @@ extension MainSequence {
 
 extension Component {
     var distance: Double {
-        return (references.instability + declarations.abstractness - 1).magnitude
+        return (references.instability + types.abstractness - 1).magnitude
     }
 }

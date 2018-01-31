@@ -3,6 +3,6 @@ typealias ComponentID = String
 struct Component {
     let componentID: ComponentID
     let name: String
-    var declarations: Declarations
+    var types: Types
     var references: References
 }

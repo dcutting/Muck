@@ -1,9 +1,9 @@
-struct Declarations {
+struct Types {
 
     var abstracts = [DeclarationID]()
     var concretes = [DeclarationID]()
 
-    var numberDeclarations: Int {
+    var numberTypes: Int {
         return numberAbstracts + concretes.count
     }
 
@@ -12,9 +12,9 @@ struct Declarations {
     }
 
     var abstractness: Double {
-        precondition(numberDeclarations >= numberAbstracts, "numberDeclarations < numberAbstracts")
-        guard numberDeclarations > 0 else { return 1.0 }
-        return Double(numberAbstracts) / Double(numberDeclarations)
+        precondition(numberTypes >= numberAbstracts, "numberTypes < numberAbstracts")
+        guard numberTypes > 0 else { return 1.0 }
+        return Double(numberAbstracts) / Double(numberTypes)
     }
 
     mutating func addAbstract(_ declarationID: DeclarationID) {

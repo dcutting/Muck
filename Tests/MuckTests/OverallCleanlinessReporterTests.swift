@@ -10,7 +10,7 @@ class OverallCleanlinessReporterTests: XCTestCase {
 
     func test_makeReport_noComponents() {
         let sut = OverallCleanlinessReporter()
-        let mainSequence = MainSequence(components: [])
+        let mainSequence = MainSequence(components: [], declarations: any())
         let actual = sut.makeReport(for: mainSequence)
         XCTAssertEqual("", actual)
     }
@@ -25,7 +25,7 @@ Stddev,0.1980
 Rating,C
 """
         let components = makeTestComponents()
-        let mainSequence = MainSequence(components: components)
+        let mainSequence = MainSequence(components: components, declarations: any())
         let actual = sut.makeReport(for: mainSequence)
 
         XCTAssertEqual(expected, actual)

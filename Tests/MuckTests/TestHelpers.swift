@@ -73,16 +73,20 @@ func any() -> Reporter {
     return StubReporter(name: any(), report: { _ in "" })
 }
 
-func any() -> Declarations {
-    return Declarations()
+func any() -> Types {
+    return Types()
 }
 
 func any() -> References {
     return References()
 }
 
+func any() -> [Component] {
+    return []
+}
+
 func any() -> MainSequence {
-    return MainSequence(components: [])
+    return MainSequence(components: any(), declarations: any())
 }
 
 class StubReporter: Reporter {
@@ -102,8 +106,8 @@ class StubReporter: Reporter {
 
 func makeTestComponents() -> [Component] {
 
-    var fooDeclarations = Declarations()
-    fooDeclarations.addConcrete(dummy())
+    var fooTypes = Types()
+    fooTypes.addConcrete(dummy())
     var fooReferences = References()
     fooReferences.addDependency(componentID: dummy(), declarationID: dummy())
     fooReferences.addDependency(componentID: dummy(), declarationID: dummy())
@@ -122,31 +126,31 @@ func makeTestComponents() -> [Component] {
     fooReferences.addDependent(componentID: dummy(), declarationID: dummy())
     fooReferences.addDependent(componentID: dummy(), declarationID: dummy())
 
-    var barDeclarations = Declarations()
-    barDeclarations.addAbstract(dummy())
-    barDeclarations.addConcrete(dummy())
-    barDeclarations.addConcrete(dummy())
-    barDeclarations.addConcrete(dummy())
+    var barTypes = Types()
+    barTypes.addAbstract(dummy())
+    barTypes.addConcrete(dummy())
+    barTypes.addConcrete(dummy())
+    barTypes.addConcrete(dummy())
     var barReferences = References()
     barReferences.addDependency(componentID: dummy(), declarationID: dummy())
     barReferences.addDependency(componentID: dummy(), declarationID: dummy())
     barReferences.addDependency(componentID: dummy(), declarationID: dummy())
     barReferences.addDependent(componentID: dummy(), declarationID: dummy())
 
-    var bazDeclarations = Declarations()
-    bazDeclarations.addAbstract(dummy())
-    bazDeclarations.addAbstract(dummy())
-    bazDeclarations.addAbstract(dummy())
-    bazDeclarations.addConcrete(dummy())
-    bazDeclarations.addConcrete(dummy())
+    var bazTypes = Types()
+    bazTypes.addAbstract(dummy())
+    bazTypes.addAbstract(dummy())
+    bazTypes.addAbstract(dummy())
+    bazTypes.addConcrete(dummy())
+    bazTypes.addConcrete(dummy())
     var bazReferences = References()
     bazReferences.addDependent(componentID: dummy(), declarationID: dummy())
     bazReferences.addDependent(componentID: dummy(), declarationID: dummy())
 
     let components = [
-        Component(componentID: "foo", name: "Foo", declarations: fooDeclarations, references: fooReferences),
-        Component(componentID: "bar", name: "Bar", declarations: barDeclarations, references: barReferences),
-        Component(componentID: "baz", name: "Baz", declarations: bazDeclarations, references: bazReferences)
+        Component(componentID: "foo", name: "Foo", types: fooTypes, references: fooReferences),
+        Component(componentID: "bar", name: "Bar", types: barTypes, references: barReferences),
+        Component(componentID: "baz", name: "Baz", types: bazTypes, references: bazReferences)
     ]
 
     return components

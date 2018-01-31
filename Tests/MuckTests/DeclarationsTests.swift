@@ -3,10 +3,10 @@ import XCTest
 
 class DeclarationsTests: XCTestCase {
 
-    var sut: Declarations!
+    var sut: Types!
 
     override func setUp() {
-        sut = Declarations()
+        sut = Types()
     }
 
     func test_numberAbstracts() {
@@ -16,12 +16,12 @@ class DeclarationsTests: XCTestCase {
         XCTAssertEqual(3, sut.numberAbstracts)
     }
 
-    func test_numberDeclarations() {
+    func test_numberTypes() {
         sut.addAbstract(any())
         sut.addAbstract(any())
         sut.addConcrete(any())
         sut.addConcrete(any())
-        XCTAssertEqual(4, sut.numberDeclarations)
+        XCTAssertEqual(4, sut.numberTypes)
     }
 
     func test_abstractness() {

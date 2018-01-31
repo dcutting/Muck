@@ -32,8 +32,8 @@ class ComponentCleanlinessReporter: Reporter {
 
     private func makeRow(for component: Component) -> String {
         let references = component.references
-        let declarations = component.declarations
+        let types = component.types
         let rating = calculateRating(distance: component.distance)
-        return "\(component.name),\(references.fanIn),\(references.fanOut),\(references.instability.formatted),\(declarations.numberDeclarations),\(declarations.numberAbstracts),\(declarations.abstractness.formatted),\(component.distance.formatted),\(rating)"
+        return "\(component.name),\(references.fanIn),\(references.fanOut),\(references.instability.formatted),\(types.numberTypes),\(types.numberAbstracts),\(types.abstractness.formatted),\(component.distance.formatted),\(rating)"
     }
 }
