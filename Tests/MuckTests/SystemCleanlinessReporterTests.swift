@@ -1,22 +1,22 @@
 import XCTest
 @testable import Muck
 
-class OverallCleanlinessReporterTests: XCTestCase {
+class SystemCleanlinessReporterTests: XCTestCase {
 
     func test_name() {
-        let sut = OverallCleanlinessReporter()
-        XCTAssertEqual("Overall Cleanliness", sut.name)
+        let sut = SystemCleanlinessReporter()
+        XCTAssertEqual("System Cleanliness", sut.name)
     }
 
     func test_makeReport_noComponents() {
-        let sut = OverallCleanlinessReporter()
+        let sut = SystemCleanlinessReporter()
         let mainSequence = MainSequence(components: [], declarations: any())
         let actual = sut.makeReport(for: mainSequence)
         XCTAssertEqual("", actual)
     }
 
     func test_makeReport() {
-        let sut = OverallCleanlinessReporter()
+        let sut = SystemCleanlinessReporter()
         let expected = """
 Count,3
 Mean,0.2792

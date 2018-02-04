@@ -1,7 +1,7 @@
-class OverallCleanlinessReporter: Reporter {
+class SystemCleanlinessReporter: Reporter {
 
     var name: String {
-        return "Overall Cleanliness"
+        return "System Cleanliness"
     }
 
     func makeReport(for mainSequence: MainSequence) -> String {
