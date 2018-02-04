@@ -1,4 +1,4 @@
-enum ReportName: String {
+private enum ReportName: String {
     case decl
     case dep
     case dotdep
@@ -8,7 +8,7 @@ enum ReportName: String {
     static let all: [ReportName] = [.decl, .dep, .dotdep, .compclean, .sysclean]
 }
 
-class ReporterFactory {
+class ReporterArgumentBuilder {
 
     var validReportNames: [String] {
         return ReportName.all.map { $0.rawValue }

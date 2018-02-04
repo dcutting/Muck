@@ -9,7 +9,7 @@ enum ArgumentsBuilderError: Error, LocalizedError {
     case missingScheme
     case missingTargetOrScheme
     case noModulesSpecified
-    case invalidGranularity
+    case invalidGranularity(String)
     case unknownReport(String)
 
     var errorDescription: String? {
@@ -24,8 +24,8 @@ enum ArgumentsBuilderError: Error, LocalizedError {
             return "Missing target or scheme"
         case .noModulesSpecified:
             return "No modules specified for analysis"
-        case .invalidGranularity:
-            return "Invalid granularity specified"
+        case .invalidGranularity(let name):
+            return "Unknown granularity \(name)"
         case .unknownReport(let name):
             return "Unknown report \(name)"
         }
@@ -38,7 +38,8 @@ class ArgumentsBuilder {
 
     func parse(arguments: [String]) -> Raker.Arguments {
 
-        let reporterFactory = ReporterFactory()
+        let granularityFactory = GranularityArgumentBuilder()
+        let reporterFactory = ReporterArgumentBuilder()
 
         do {
             let workspaceArg: OptionArgument<String> =
@@ -51,8 +52,9 @@ class ArgumentsBuilder {
                 parser.add(option: "--target", shortName: "-t", kind: String.self, usage: "The Xcode target (permitted if project is specified)")
             let modulesArg: OptionArgument<[String]> =
                 parser.add(option: "--modules", shortName: "-m", kind: [String].self, usage: "The modules to analyse (required)")
+            let validGranularities = granularityFactory.validGranularityNames.joined(separator: "|")
             let granularityArg: OptionArgument<String> =
-                parser.add(option: "--granularity", shortName: "-g", kind: String.self, usage: "How to group components, by [module|folder|file|type] (defaults to module)")
+                parser.add(option: "--granularity", shortName: "-g", kind: String.self, usage: "How to group components [\(validGranularities)] (defaults to module)")
             let verboseArg: OptionArgument<Bool> =
                 parser.add(option: "--verbose", shortName: "-v", kind: Bool.self, usage: "Verbose logging")
             let ignoreExternsArg: OptionArgument<Bool> =
@@ -70,11 +72,12 @@ class ArgumentsBuilder {
                                                                       schemeArg: schemeArg,
                                                                       targetArg: targetArg)
 
-            let (granularityStrategy, componentNameStrategy) = try findGranularity(parsedArguments: parsedArguments, granularityArg: granularityArg, path: path)
-
             guard let moduleNames = parsedArguments.get(modulesArg) else {
                 throw ArgumentsBuilderError.noModulesSpecified
             }
+
+            let granularity = parsedArguments.get(granularityArg)
+            let (granularityStrategy, componentNameStrategy) = try granularityFactory.makeStrategies(granularity: granularity, path: path)
 
             let reportNames = parsedArguments.get(reportsArg)
             let reporter = try reporterFactory.makeReporter(for: reportNames)
@@ -163,34 +166,7 @@ class ArgumentsBuilder {
         let path = URL(fileURLWithPath: workspaceOrProject)
         return path.deletingLastPathComponent().path
     }
-
-    private func findGranularity(parsedArguments: ArgumentParser.Result, granularityArg: OptionArgument<String>, path: String) throws -> (GranularityStrategy, ComponentNameStrategy) {
-        let granularity = parsedArguments.get(granularityArg) ?? "module"
-        let granularityStrategy: GranularityStrategy
-        let componentNameStrategy: ComponentNameStrategy
-        switch granularity {
-        case "type":
-            granularityStrategy = TypeGranularityStrategy()
-            componentNameStrategy = IdentityComponentNameStrategy()
-        case "file":
-            granularityStrategy = FileGranularityStrategy()
-            componentNameStrategy = makeStrippedComponentNameStrategy(path: path)
-        case "folder":
-            granularityStrategy = FolderGranularityStrategy()
-            componentNameStrategy = makeStrippedComponentNameStrategy(path: path)
-        case "module":
-            granularityStrategy = ModuleGranularityStrategy()
-            componentNameStrategy = IdentityComponentNameStrategy()
-        default:
-            throw ArgumentsBuilderError.invalidGranularity
-        }
-        return (granularityStrategy, componentNameStrategy)
-    }
-
-    private func makeStrippedComponentNameStrategy(path: String) -> ComponentNameStrategy {
-        return StrippedComponentNameStrategy(prefix: path + "/", suffix: ".swift")
-    }
-
+    
     private func exitWithUsage() -> Never {
         parser.printUsage(on: stderrStream)
         exit(1)
