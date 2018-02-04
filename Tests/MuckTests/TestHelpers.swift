@@ -50,7 +50,7 @@ func any() -> ComponentNameStrategy {
 }
 
 func any() -> Raker.Arguments {
-    return Raker.Arguments(path: any(), xcodeBuildArguments: any(), moduleNames: any(), isVerbose: any(), granularityStrategy: any(), componentNameStrategy: any(), shouldIgnoreExternalDependencies: any())
+    return Raker.Arguments(path: any(), xcodeBuildArguments: any(), moduleNames: any(), isVerbose: any(), granularityStrategy: any(), componentNameStrategy: any(), shouldIgnoreExternalDependencies: any(), reporter: any())
 }
 
 func dummy() -> String {

@@ -10,6 +10,7 @@ enum ArgumentsBuilderError: Error, LocalizedError {
     case missingTargetOrScheme
     case noModulesSpecified
     case invalidGranularity
+    case unknownReport(String)
 
     var errorDescription: String? {
         switch self {
@@ -25,6 +26,8 @@ enum ArgumentsBuilderError: Error, LocalizedError {
             return "No modules specified for analysis"
         case .invalidGranularity:
             return "Invalid granularity specified"
+        case .unknownReport(let name):
+            return "Unknown report \(name)"
         }
     }
 }
@@ -52,6 +55,8 @@ class ArgumentsBuilder {
                 parser.add(option: "--verbose", shortName: "-v", kind: Bool.self, usage: "Verbose logging")
             let ignoreExternsArg: OptionArgument<Bool> =
                 parser.add(option: "--ignoreExterns", shortName: "-i", kind: Bool.self, usage: "Ignore dependencies external to specified modules")
+            let reportsArg: OptionArgument<[String]> =
+                parser.add(option: "--reports", shortName: "-r", kind: [String].self, usage: "The reports to produce on stdout [decl|dep|dotdep|compclean|sysclean] (defaults to all)")
 
             let arguments = Array(arguments.dropFirst())
             let parsedArguments = try parser.parse(arguments)
@@ -68,6 +73,10 @@ class ArgumentsBuilder {
                 throw ArgumentsBuilderError.noModulesSpecified
             }
 
+            // TODO: don't repeat report names over and over
+            let reportNames = parsedArguments.get(reportsArg) ?? ["decl", "dep", "dotdep", "compclean", "sysclean"]
+            let reporter = try makeReporter(for: reportNames)
+
             let isVerbose = parsedArguments.get(verboseArg) ?? false
             let ignoreExternalDependencies = parsedArguments.get(ignoreExternsArg) ?? false
 
@@ -77,7 +86,8 @@ class ArgumentsBuilder {
                                                isVerbose: isVerbose,
                                                granularityStrategy: granularityStrategy,
                                                componentNameStrategy: componentNameStrategy,
-                                               shouldIgnoreExternalDependencies: ignoreExternalDependencies)
+                                               shouldIgnoreExternalDependencies: ignoreExternalDependencies,
+                                               reporter: reporter)
 
             if isVerbose {
                 printStdErr("\(muckArguments)")
@@ -177,6 +187,28 @@ class ArgumentsBuilder {
 
     private func makeStrippedComponentNameStrategy(path: String) -> ComponentNameStrategy {
         return StrippedComponentNameStrategy(prefix: path + "/", suffix: ".swift")
+    }
+
+    private func makeReporter(for names: [String]) throws -> Reporter {
+        let reporters = try names.map(makeReporter)
+        return CompoundReporter(reporters: reporters)
+    }
+
+    private func makeReporter(for name: String) throws -> Reporter {
+        switch name {
+        case "decl":
+            return DeclarationReporter()
+        case "dep":
+            return DependencyReporter()
+        case "dotdep":
+            return DotDependencyReporter()
+        case "compclean":
+            return ComponentCleanlinessReporter(sortBy: .distance)
+        case "sysclean":
+            return SystemCleanlinessReporter()
+        default:
+            throw ArgumentsBuilderError.unknownReport(name)
+        }
     }
 
     private func exitWithUsage() -> Never {

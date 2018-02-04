@@ -8,6 +8,7 @@ class Raker {
         let granularityStrategy: GranularityStrategy
         let componentNameStrategy: ComponentNameStrategy
         let shouldIgnoreExternalDependencies: Bool
+        let reporter: Reporter
     }
 
     func start(arguments args: Arguments) {
@@ -19,15 +20,8 @@ class Raker {
             let declarations = try finder.find()
             let components = transformer.transform(declarations: declarations)
             let mainSequence = MainSequence(components: components, declarations: declarations)
-
-            let reporter = CompoundReporter(reporters: [
-                DeclarationReporter(),
-                DependencyReporter(),
-                DotDependencyReporter(),
-                ComponentCleanlinessReporter(sortBy: .distance),
-                OverallCleanlinessReporter()
-                ])
-            print(reporter.makeReport(for: mainSequence))
+            let report = args.reporter.makeReport(for: mainSequence)
+            print(report)
 
         } catch SourceKittenFinderError.build(let name) {
             printStdErr("Error: Could not build specified workspace/scheme or project/scheme/target, or could not find module \(name)")
