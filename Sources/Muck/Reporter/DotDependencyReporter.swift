@@ -1,3 +1,18 @@
+private struct Edge: Hashable {
+
+    let src: ComponentID
+    let dst: ComponentID?
+
+    var hashValue: Int {
+        let dstHashValue = dst?.hashValue ?? 0
+        return src.hashValue ^ dstHashValue
+    }
+
+    static func ==(lhs: Edge, rhs: Edge) -> Bool {
+        return lhs.src == rhs.src && lhs.dst == rhs.dst
+    }
+}
+
 class DotDependencyReporter: Reporter {
 
     var name: String {
@@ -7,16 +22,26 @@ class DotDependencyReporter: Reporter {
     func makeReport(for mainSequence: MainSequence) -> String {
 
         let components = mainSequence.components.sorted { $0.name < $1.name }
-        let edges = components.map { component -> [String] in
-            let dependencies = component.references.dependencies.map { dependency -> String in
-                let referencedComponent = mainSequence.components.first { $0.componentID == dependency.componentID }
-                let src = component.name
-                let dst = referencedComponent?.name ?? "<extern>"
-                return "  \"\(src)\" -> \"\(dst)\""
+        let componentEdges = components.map { component -> [String] in
+
+            let edges = component.references.dependencies.reduce(Set<Edge>()) { acc, dependency in
+                let edge = Edge(src: component.componentID, dst: dependency.componentID)
+                return acc.union([edge])
             }
-            return dependencies
+
+            let dotEdges = edges.map { edge -> String in
+                let srcName = findName(for: edge.src, in: mainSequence)
+                let dstName = findName(for: edge.dst, in: mainSequence)
+                return "  \"\(srcName)\" -> \"\(dstName)\""
+            }
+            return dotEdges
         }
-        let result = ["digraph {"] + edges.flattened() + ["}"]
+        let result = ["digraph {"] + componentEdges.flattened() + ["}"]
         return result.joined(separator: "\n")
+    }
+
+    private func findName(for componentID: ComponentID?, in mainSequence: MainSequence) -> String {
+        let component = mainSequence.components.first { $0.componentID == componentID }
+        return component?.name ?? "<extern>"
     }
 }
