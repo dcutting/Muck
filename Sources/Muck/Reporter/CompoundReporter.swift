@@ -1,9 +1,13 @@
-class CompoundReporter: Reporter {
+class CompoundReporter: Reporter, CustomStringConvertible {
 
     private let reporters: [Reporter]
 
     var name: String {
         return "Compound Report"
+    }
+
+    var description: String {
+        return reporters.map { "\($0)" }.joined(separator: ", ")
     }
 
     init(reporters: [Reporter]) {
