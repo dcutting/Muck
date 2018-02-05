@@ -53,15 +53,6 @@ class Transformer {
 
     private func analyseStability(for declaration: Declaration, parent: DeclarationID?) {
 
-        if case .declaration(let declarationID) = declaration.kind {
-            declaration.declarations.forEach {
-                analyseStability(for: $0, parent: declarationID)
-            }
-        } else {
-            declaration.declarations.forEach(analyseStability)
-            return
-        }
-
         let thisComponentID = granularityStrategy.findComponentID(for: declaration)
 
         if let parent = parent, case .declaration(let declarationID) = declaration.kind {
@@ -79,6 +70,14 @@ class Transformer {
 
             addDependent(componentID: referencedComponentID, declarationID: dependencyID, from: thisComponentID)
             addDependency(componentID: thisComponentID, declarationID: dependencyID, ownedBy: referencedComponentID)
+        }
+
+        if case .declaration(let declarationID) = declaration.kind {
+            declaration.declarations.forEach {
+                analyseStability(for: $0, parent: declarationID)
+            }
+        } else {
+            declaration.declarations.forEach(analyseStability)
         }
     }
 
