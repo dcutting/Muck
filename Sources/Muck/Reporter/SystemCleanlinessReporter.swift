@@ -11,13 +11,11 @@ class SystemCleanlinessReporter: Reporter {
             let standardDeviation = mainSequence.standardDeviation
             else { return "" }
         let count = mainSequence.components.count
-        let rating = calculateRating(distance: median)
         return """
 Count,\(count)
 Mean,\(mean.formatted)
 Median,\(median.formatted)
 Stddev,\(standardDeviation.formatted)
-Rating,\(rating)
 """
     }
 }

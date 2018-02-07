@@ -22,7 +22,6 @@ Count,3
 Mean,0.2792
 Median,0.4000
 Stddev,0.1980
-Rating,C
 """
         let components = makeTestComponents()
         let mainSequence = MainSequence(components: components, declarations: any())

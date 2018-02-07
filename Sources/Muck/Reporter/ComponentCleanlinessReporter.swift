@@ -26,14 +26,13 @@ class ComponentCleanlinessReporter: Reporter {
         }
         let rows = components.map(makeRow)
 
-        let header = "Name,FanIn,FanOut,I,Nc,Na,A,D,Rating"
+        let header = "Name,FanIn,FanOut,I,Nc,Na,A,D"
         return ([header] + rows).joined(separator: "\n")
     }
 
     private func makeRow(for component: Component) -> String {
         let references = component.references
         let types = component.types
-        let rating = calculateRating(distance: component.distance)
-        return "\"\(component.name)\",\(references.fanIn),\(references.fanOut),\(references.instability.formatted),\(types.numberTypes),\(types.numberAbstracts),\(types.abstractness.formatted),\(component.distance.formatted),\(rating)"
+        return "\"\(component.name)\",\(references.fanIn),\(references.fanOut),\(references.instability.formatted),\(types.numberTypes),\(types.numberAbstracts),\(types.abstractness.formatted),\(component.distance.formatted)"
     }
 }
