@@ -51,8 +51,7 @@ class SourceKittenFinder: Finder {
         let sourceKitOutput = Request.index(file: path, arguments: arguments).send()
         let sourceKitEntities = findSourceKitEntities(in: sourceKitOutput)
         let (declarations, references) = extractDeclarationsAndReferences(from: sourceKitEntities, path: path, module: module)
-        let stripper = StrippedComponentNameStrategy(prefix: rootPath, suffix: ".swift")
-        let name = stripper.findComponentName(for: path)
+        let name = path.strip(prefix: rootPath, suffix: ".swift")
         return Declaration(kind: .file, path: path, module: module, name: name, isAbstract: false, declarations: declarations, references: references)
     }
 

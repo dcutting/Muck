@@ -9,14 +9,7 @@ class StrippedComponentNameStrategy: ComponentNameStrategy {
     }
 
     func findComponentName(for componentID: ComponentID) -> String {
-        var result = componentID
-        if result.hasPrefix(prefix) {
-            result = String(result.dropFirst(prefix.count))
-        }
-        if result.hasSuffix(suffix) {
-            result = String(result.dropLast(suffix.count))
-        }
-        return result
+        return componentID.strip(prefix: prefix, suffix: suffix)
     }
 
     var description: String {
