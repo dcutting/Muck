@@ -91,13 +91,13 @@ class ArgumentsBuilder {
             let ignoreExternalDependencies = parsedArguments.get(ignoreExternsArg) ?? false
 
             let muckArguments = Raker.Arguments(path: path,
-                                               xcodeBuildArguments: xcodeBuildArguments,
-                                               moduleNames: moduleNames,
-                                               isVerbose: isVerbose,
-                                               granularityStrategy: granularityStrategy,
-                                               componentNameStrategy: componentNameStrategy,
-                                               shouldIgnoreExternalDependencies: ignoreExternalDependencies,
-                                               reporter: reporter)
+                                                xcodeBuildArguments: xcodeBuildArguments,
+                                                moduleNames: moduleNames,
+                                                isVerbose: isVerbose,
+                                                granularityStrategy: granularityStrategy,
+                                                componentNameStrategy: componentNameStrategy,
+                                                shouldIgnoreExternalDependencies: ignoreExternalDependencies,
+                                                reporter: reporter)
 
             if isVerbose {
                 printStdErr("\(muckArguments)")

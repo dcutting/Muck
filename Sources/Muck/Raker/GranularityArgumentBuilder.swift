@@ -41,6 +41,6 @@ class GranularityArgumentBuilder {
     }
 
     private func makeStrippedComponentNameStrategy(path: String) -> ComponentNameStrategy {
-        return StrippedComponentNameStrategy(prefix: path + "/", suffix: ".swift")
+        return StrippedComponentNameStrategy(prefix: path, suffix: ".swift")
     }
 }

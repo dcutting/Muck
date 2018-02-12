@@ -49,6 +49,6 @@ class ProjectArgumentBuilder {
 
     private func findPath(forWorkspaceOrProject workspaceOrProject: String) -> String {
         let path = URL(fileURLWithPath: workspaceOrProject)
-        return path.deletingLastPathComponent().path
+        return path.deletingLastPathComponent().path + "/"
     }
 }

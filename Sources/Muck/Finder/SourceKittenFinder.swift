@@ -8,20 +8,20 @@ enum SourceKittenFinderError: Error {
 
 class SourceKittenFinder: Finder {
 
-    private let path: String
+    private let rootPath: String
     private let xcodeBuildArguments: [String]
     private let moduleNames: [String]
     private let isVerbose: Bool
 
     init(path: String, xcodeBuildArguments: [String], moduleNames: [String], isVerbose: Bool) {
-        self.path = path
+        self.rootPath = path
         self.xcodeBuildArguments = xcodeBuildArguments
         self.moduleNames = moduleNames
         self.isVerbose = isVerbose
     }
 
     func find() throws -> [Declaration] {
-        return try analyse(path: path, xcodeBuildArguments: xcodeBuildArguments, moduleNames: moduleNames)
+        return try analyse(path: rootPath, xcodeBuildArguments: xcodeBuildArguments, moduleNames: moduleNames)
     }
 
     private func analyse(path: String, xcodeBuildArguments: [String], moduleNames: [String]) throws -> [Declaration] {
@@ -51,7 +51,9 @@ class SourceKittenFinder: Finder {
         let sourceKitOutput = Request.index(file: path, arguments: arguments).send()
         let sourceKitEntities = findSourceKitEntities(in: sourceKitOutput)
         let (declarations, references) = extractDeclarationsAndReferences(from: sourceKitEntities, path: path, module: module)
-        return Declaration(kind: .file, path: path, module: module, name: path, isAbstract: false, declarations: declarations, references: references)
+        let stripper = StrippedComponentNameStrategy(prefix: rootPath, suffix: ".swift")
+        let name = stripper.findComponentName(for: path)
+        return Declaration(kind: .file, path: path, module: module, name: name, isAbstract: false, declarations: declarations, references: references)
     }
 
     private func findSourceKitEntities(in sourceKitOutput: [String: SourceKitRepresentable]) -> [[String: SourceKitRepresentable]] {
