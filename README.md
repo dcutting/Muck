@@ -4,9 +4,9 @@
 
 Muck analyses dependencies between "components" in your Swift projects.
 
-You can specify what constitutes a "component" using the granularity option you provide. By default this is `module` meaning each Swift module will be considered a separate component. If you only have a single module (as is common), you can change this to `folder`, `file`, or `type` depending on how organised your source code is.
+<img src="Docs/RemixStarBrowser-deps.png" alt="Song" />
 
-Some of the reports are about "cleanliness" in the sense defined by Uncle Bob in his [Clean Architecture](https://www.amazon.co.uk/Clean-Architecture-Craftsmans-Software-Structure/dp/0134494164) book. You can use Muck to find how far your components deviate from the main sequence.
+You can specify what constitutes a "component" using the granularity option. By default this is `module` meaning each Swift module will be considered a separate component. If you only have a single module (as is common), you can change this to `folder`, `file`, or `type` depending on how organised your source code is.
 
 ## Running Muck
 
@@ -62,4 +62,18 @@ Muck can output a Graphviz `dot` format report which you can visualise with `dot
 
 ```
 muck -p MyApp.xcodeproj -s MyApp -m MyApp -i -g folder -r dotdep | dot -Tpdf -o deps.pdf
+```
+
+## Cleanliness
+
+Some of Muck's reports are about "cleanliness" in the sense defined by Uncle Bob in his [Clean Architecture](https://www.amazon.co.uk/Clean-Architecture-Craftsmans-Software-Structure/dp/0134494164) book. You can use Muck to find how far your components deviate from the main sequence.
+
+```
+Name,FanIn,FanOut,I,Nc,Na,A,D
+"Utility",3,0,0.0000,3,0,0.0000,1.0000
+"Entity",5,0,0.0000,7,0,0.0000,1.0000
+"Wireframe",9,0,0.0000,11,7,0.6364,0.3636
+"Marketplace",0,26,1.0000,57,13,0.2281,0.2281
+"Service",4,8,0.6667,4,2,0.5000,0.1667
+"GroupSelectionFeature",5,8,0.6154,17,4,0.2353,0.1493
 ```
