@@ -2,48 +2,48 @@
   "object": {
     "pins": [
       {
-        "package": "Clang_C",
-        "repositoryURL": "https://github.com/norio-nomura/Clang_C.git",
-        "state": {
-          "branch": null,
-          "revision": "90a9574276f0fd17f02f58979423c3fd4d73b59e",
-          "version": "1.0.2"
-        }
-      },
-      {
         "package": "Commandant",
         "repositoryURL": "https://github.com/Carthage/Commandant.git",
         "state": {
           "branch": null,
-          "revision": "c281992c31c3f41c48b5036c5a38185eaec32626",
-          "version": "0.12.0"
+          "revision": "ab68611013dec67413628ac87c1f29e8427bc8e4",
+          "version": "0.17.0"
         }
       },
       {
-        "package": "Result",
-        "repositoryURL": "https://github.com/antitypical/Result.git",
+        "package": "CwlCatchException",
+        "repositoryURL": "https://github.com/mattgallagher/CwlCatchException.git",
         "state": {
           "branch": null,
-          "revision": "7477584259bfce2560a19e06ad9f71db441fff11",
-          "version": "3.2.4"
+          "revision": "7cd2f8cacc4d22f21bc0b2309c3b18acf7957b66",
+          "version": "1.2.0"
         }
       },
       {
-        "package": "SWXMLHash",
-        "repositoryURL": "https://github.com/drmohundro/SWXMLHash.git",
+        "package": "CwlPreconditionTesting",
+        "repositoryURL": "https://github.com/mattgallagher/CwlPreconditionTesting.git",
         "state": {
           "branch": null,
-          "revision": "a90a62e7723aaa65201ed2e31e7470584db31a29",
-          "version": "4.3.5"
+          "revision": "c228db5d2ad1b01ebc84435e823e6cca4e3db98b",
+          "version": "1.2.0"
         }
       },
       {
-        "package": "SourceKit",
-        "repositoryURL": "https://github.com/norio-nomura/SourceKit.git",
+        "package": "Nimble",
+        "repositoryURL": "https://github.com/Quick/Nimble.git",
         "state": {
           "branch": null,
-          "revision": "18eaa67ca44443bbe39646916792b9f0c98dbaa1",
-          "version": "1.0.1"
+          "revision": "b02b00b30b6353632aa4a5fb6124f8147f7140c0",
+          "version": "8.0.5"
+        }
+      },
+      {
+        "package": "Quick",
+        "repositoryURL": "https://github.com/Quick/Quick.git",
+        "state": {
+          "branch": null,
+          "revision": "33682c2f6230c60614861dfc61df267e11a1602f",
+          "version": "2.2.0"
         }
       },
       {
@@ -51,8 +51,17 @@
         "repositoryURL": "https://github.com/jpsim/SourceKitten.git",
         "state": {
           "branch": null,
-          "revision": "71e8297e5d95118588f8aa8e1de892762346dc9d",
-          "version": "0.18.4"
+          "revision": "77a4dbbb477a8110eb8765e3c44c70fb4929098f",
+          "version": "0.29.0"
+        }
+      },
+      {
+        "package": "llbuild",
+        "repositoryURL": "https://github.com/apple/swift-llbuild.git",
+        "state": {
+          "branch": null,
+          "revision": "f73b84bc1525998e5e267f9d830c1411487ac65e",
+          "version": "0.2.0"
         }
       },
       {
@@ -60,8 +69,17 @@
         "repositoryURL": "https://github.com/apple/swift-package-manager.git",
         "state": {
           "branch": null,
-          "revision": "90abb3c4c9415afee34291e66e655c58a1902784",
-          "version": "0.1.0"
+          "revision": "9abcc2260438177cecd7cf5185b144d13e74122b",
+          "version": "0.5.0"
+        }
+      },
+      {
+        "package": "SWXMLHash",
+        "repositoryURL": "https://github.com/drmohundro/SWXMLHash.git",
+        "state": {
+          "branch": null,
+          "revision": "a4931e5c3bafbedeb1601d3bb76bbe835c6d475a",
+          "version": "5.0.1"
         }
       },
       {
@@ -69,8 +87,8 @@
         "repositoryURL": "https://github.com/jpsim/Yams.git",
         "state": {
           "branch": null,
-          "revision": "90a76f3cdb552b8e6aea5dabdd6c3578b8a7ad45",
-          "version": "0.4.1"
+          "revision": "c947a306d2e80ecb2c0859047b35c73b8e1ca27f",
+          "version": "2.0.0"
         }
       }
     ]

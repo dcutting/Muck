@@ -22,7 +22,7 @@ let package = Package(
             dependencies: ["Muck"]),
         .target(
             name: "Muck",
-            dependencies: ["SourceKittenFramework", "Utility"]),
+            dependencies: ["SourceKittenFramework", "SPMUtility"]),
         .testTarget(
             name: "MuckTests",
             dependencies: ["Muck"]),
