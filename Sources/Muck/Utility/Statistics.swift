@@ -4,21 +4,21 @@ extension Sequence where Element: Numeric {
     }
 }
 
-extension Collection where Element: FloatingPoint, IndexDistance == Int {
+extension Collection where Element: FloatingPoint {
     var mean: Element? {
         guard !isEmpty else { return nil }
         return sum / Element(count)
     }
 }
 
-extension Collection where Element: DoubleConvertible, Element: BinaryInteger, IndexDistance == Int {
+extension Collection where Element: DoubleConvertible, Element: BinaryInteger {
     var mean: Double? {
         guard !isEmpty else { return nil }
         return sum.asDouble() / count.asDouble()
     }
 }
 
-extension Collection where Element: DoubleConvertible, Element: Comparable, IndexDistance == Int {
+extension Collection where Element: DoubleConvertible, Element: Comparable {
     var median: Double? {
         guard !isEmpty else { return nil }
         let sortedElements = sorted()
@@ -31,7 +31,7 @@ extension Collection where Element: DoubleConvertible, Element: Comparable, Inde
     }
 }
 
-extension Collection where Element: FloatingPoint, IndexDistance == Int {
+extension Collection where Element: FloatingPoint {
     var standardDeviation: Element? {
         guard let m = self.mean else { return nil }
         let diffSqs = map { ($0 - m) * ($0 - m) }

@@ -2,15 +2,6 @@ private struct Edge: Hashable {
 
     let src: ComponentID
     let dst: ComponentID?
-
-    var hashValue: Int {
-        let dstHashValue = dst?.hashValue ?? 0
-        return src.hashValue ^ dstHashValue
-    }
-
-    static func ==(lhs: Edge, rhs: Edge) -> Bool {
-        return lhs.src == rhs.src && lhs.dst == rhs.dst
-    }
 }
 
 class DotDependencyReporter: Reporter {

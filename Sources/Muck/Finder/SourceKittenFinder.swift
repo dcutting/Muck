@@ -40,15 +40,15 @@ class SourceKittenFinder: Finder {
         }
 
         log("Analysing module \(module.name)")
-        let sourceFiles = module.sourceFiles.map { file -> Declaration in
+        let sourceFiles = try module.sourceFiles.map { file -> Declaration in
             log("  - \(file)")
-            return makeFileDeclaration(for: file, module: module.name, arguments: module.compilerArguments)
+            return try makeFileDeclaration(for: file, module: module.name, arguments: module.compilerArguments)
         }
         return sourceFiles
     }
 
-    private func makeFileDeclaration(for path: String, module: String, arguments: [String]) -> Declaration {
-        let sourceKitOutput = Request.index(file: path, arguments: arguments).send()
+    private func makeFileDeclaration(for path: String, module: String, arguments: [String]) throws -> Declaration {
+        let sourceKitOutput = try Request.index(file: path, arguments: arguments).send()
         let sourceKitEntities = findSourceKitEntities(in: sourceKitOutput)
         let (declarations, references) = extractDeclarationsAndReferences(from: sourceKitEntities, path: path, module: module)
         let name = path.strip(prefix: rootPath, suffix: ".swift")
@@ -57,7 +57,7 @@ class SourceKittenFinder: Finder {
 
     private func findSourceKitEntities(in sourceKitOutput: [String: SourceKitRepresentable]) -> [[String: SourceKitRepresentable]] {
         guard let keyEntities = sourceKitOutput["key.entities"] as? [SourceKitRepresentable] else { return [] }
-        return keyEntities.flatMap { $0 as? [String: SourceKitRepresentable] }
+        return keyEntities.compactMap { $0 as? [String: SourceKitRepresentable] }
     }
 
     private func extractDeclarationsAndReferences(from sourceKitEntities: [[String: SourceKitRepresentable]], path: String, module: String, accumulatedNames: [String] = []) -> ([Declaration], [DeclarationID]) {

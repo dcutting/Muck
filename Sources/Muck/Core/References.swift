@@ -2,15 +2,6 @@ struct Dependency: Hashable {
 
     let componentID: ComponentID?
     let declarationID: DeclarationID
-
-    var hashValue: Int {
-        let componentIDHashValue = componentID?.hashValue ?? 0
-        return componentIDHashValue ^ declarationID.hashValue
-    }
-
-    static func ==(lhs: Dependency, rhs: Dependency) -> Bool {
-        return lhs.componentID == rhs.componentID && lhs.declarationID == rhs.declarationID
-    }
 }
 
 struct References {
