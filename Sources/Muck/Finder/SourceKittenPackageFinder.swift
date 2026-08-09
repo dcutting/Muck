@@ -17,9 +17,12 @@ public final class SourceKittenPackageFinder: Finder {
         guard FileManager.default.fileExists(atPath: packageURL.appendingPathComponent("Package.swift").path) else {
             throw SourceKittenFinderError.path(packageURL.path)
         }
+        guard buildPackage() else {
+            throw SourceKittenFinderError.packageBuild
+        }
         return try moduleNames.map { moduleName in
-            guard let module = Module(spmArguments: [], spmName: moduleName, inPath: packageURL.path) else {
-                throw SourceKittenFinderError.packageBuild
+            guard let module = Module(spmName: moduleName, inPath: packageURL.path) else {
+                throw SourceKittenFinderError.build(name: moduleName)
             }
             log("Analysing Swift package module \(module.name)")
             return try module.sourceFiles.map { file in
@@ -34,6 +37,22 @@ public final class SourceKittenPackageFinder: Finder {
                                    isAbstract: false, declarations: declarations, references: references)
             }
         }.flattened()
+    }
+
+    private func buildPackage() -> Bool {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/env")
+        process.arguments = ["swift", "build"]
+        process.currentDirectoryURL = packageURL
+        process.standardOutput = FileHandle.standardError
+        process.standardError = FileHandle.standardError
+        do {
+            try process.run()
+            process.waitUntilExit()
+            return process.terminationStatus == 0
+        } catch {
+            return false
+        }
     }
 
     private func findSourceKitEntities(in output: [String: SourceKitRepresentable]) -> [[String: SourceKitRepresentable]] {
