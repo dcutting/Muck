@@ -1,8 +1,7 @@
-import Basic
+import Foundation
 
 func printStdErr(_ message: String) {
-    stderrStream <<< message <<< "\n"
-    stderrStream.flush()
+    FileHandle.standardError.write(Data((message + "\n").utf8))
 }
 
 extension Double {

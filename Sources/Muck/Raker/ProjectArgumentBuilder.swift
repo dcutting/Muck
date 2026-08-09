@@ -1,5 +1,4 @@
 import Foundation
-import SPMUtility
 
 class ProjectArgumentBuilder {
 

@@ -1,9 +1,6 @@
-import Basic
 import Foundation
-import SPMUtility
 
 enum ArgumentsBuilderError: Error, LocalizedError {
-
     case needWorkspaceOrProject
     case workspaceAndProjectSpecified
     case missingScheme
@@ -14,108 +11,93 @@ enum ArgumentsBuilderError: Error, LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .needWorkspaceOrProject:
-            return "No workspace or project specified"
-        case .workspaceAndProjectSpecified:
-            return "Specify only a workspace or project"
-        case .missingScheme:
-            return "Missing scheme"
-        case .missingTargetOrScheme:
-            return "Missing target or scheme"
-        case .noModulesSpecified:
-            return "No modules specified for analysis"
-        case .invalidGranularity(let name):
-            return "Unknown granularity \(name)"
-        case .unknownReport(let name):
-            return "Unknown report \(name)"
+        case .needWorkspaceOrProject: return "No workspace or project specified"
+        case .workspaceAndProjectSpecified: return "Specify only a workspace or project"
+        case .missingScheme: return "Missing scheme"
+        case .missingTargetOrScheme: return "Missing target or scheme"
+        case .noModulesSpecified: return "No modules specified for analysis"
+        case .invalidGranularity(let name): return "Unknown granularity \(name)"
+        case .unknownReport(let name): return "Unknown report \(name)"
         }
     }
 }
 
-class ArgumentsBuilder {
+final class ArgumentsBuilder {
+    private struct ParsedOptions {
+        var values = [String: [String]]()
+        var flags = Set<String>()
 
-    private let parser = ArgumentParser(usage: "<options>", overview: "A dependency analyser for Swift projects")
+        func single(_ name: String) -> String? { values[name]?.first }
+    }
 
     func parse(arguments: [String]) -> Raker.Arguments {
-
-        let projectArgumentBuilder = ProjectArgumentBuilder()
-        let granularityArgumentBuilder = GranularityArgumentBuilder()
-        let reporterArgumentBuilder = ReporterArgumentBuilder()
-
+        let granularityBuilder = GranularityArgumentBuilder()
+        let reporterBuilder = ReporterArgumentBuilder()
         do {
-            let workspaceArg: OptionArgument<String> =
-                parser.add(option: "--workspace", shortName: "-w", kind: String.self, usage: "The Xcode workspace (specify either workspace or project but not both)")
-            let projectArg: OptionArgument<String> =
-                parser.add(option: "--project", shortName: "-p", kind: String.self, usage: "The Xcode project (specify either workspace or project but not both)")
-            let schemeArg: OptionArgument<String> =
-                parser.add(option: "--scheme", shortName: "-s", kind: String.self, usage: "The Xcode scheme (required if workspace is specified)")
-            let targetArg: OptionArgument<String> =
-                parser.add(option: "--target", shortName: "-t", kind: String.self, usage: "The Xcode target (permitted if project is specified)")
-            let modulesArg: OptionArgument<[String]> =
-                parser.add(option: "--modules", shortName: "-m", kind: [String].self, usage: "The modules to analyse (required)")
-            let validGranularities = granularityArgumentBuilder.validGranularityNames.joined(separator: "|")
-            let granularityArg: OptionArgument<String> =
-                parser.add(option: "--granularity", shortName: "-g", kind: String.self, usage: "How to group components [\(validGranularities)] (defaults to module)")
-            let verboseArg: OptionArgument<Bool> =
-                parser.add(option: "--verbose", shortName: "-v", kind: Bool.self, usage: "Verbose logging")
-            let ignoreExternsArg: OptionArgument<Bool> =
-                parser.add(option: "--ignoreExterns", shortName: "-i", kind: Bool.self, usage: "Ignore dependencies external to specified modules")
-            let validReports = reporterArgumentBuilder.validReportNames.joined(separator: "|")
-            let reportsArg: OptionArgument<[String]> =
-                parser.add(option: "--reports", shortName: "-r", kind: [String].self, usage: "One or more reports to produce on stdout [\(validReports)] (defaults to all)")
-
-            let arguments = Array(arguments.dropFirst())
-            let parsedArguments = try parser.parse(arguments)
-
-            let parsedWorkspace = parsedArguments.get(workspaceArg)
-            let parsedProject = parsedArguments.get(projectArg)
-            let parsedScheme = parsedArguments.get(schemeArg)
-            let parsedTarget = parsedArguments.get(targetArg)
-
-            let (path, xcodeBuildArguments) = try projectArgumentBuilder.parse(workspace: parsedWorkspace,
-                                                                               project: parsedProject,
-                                                                               scheme: parsedScheme,
-                                                                               target: parsedTarget)
-
-            guard let moduleNames = parsedArguments.get(modulesArg) else {
+            let parsed = try parseOptions(Array(arguments.dropFirst()))
+            let (path, buildArguments) = try ProjectArgumentBuilder().parse(
+                workspace: parsed.single("workspace"), project: parsed.single("project"),
+                scheme: parsed.single("scheme"), target: parsed.single("target"))
+            guard let modules = parsed.values["modules"], !modules.isEmpty else {
                 throw ArgumentsBuilderError.noModulesSpecified
             }
-
-            let granularity = parsedArguments.get(granularityArg)
-            let (granularityStrategy, componentNameStrategy) = try granularityArgumentBuilder.makeStrategies(granularity: granularity, path: path)
-
-            let reportNames = parsedArguments.get(reportsArg)
-            let reporter = try reporterArgumentBuilder.makeReporter(for: reportNames)
-
-            let isVerbose = parsedArguments.get(verboseArg) ?? false
-            let ignoreExternalDependencies = parsedArguments.get(ignoreExternsArg) ?? false
-
-            let muckArguments = Raker.Arguments(path: path,
-                                                xcodeBuildArguments: xcodeBuildArguments,
-                                                moduleNames: moduleNames,
-                                                isVerbose: isVerbose,
-                                                granularityStrategy: granularityStrategy,
-                                                componentNameStrategy: componentNameStrategy,
-                                                shouldIgnoreExternalDependencies: ignoreExternalDependencies,
-                                                reporter: reporter)
-
-            if isVerbose {
-                printStdErr("\(muckArguments)")
-            }
-
-            return muckArguments
-
-        } catch let error as ArgumentParserError {
-            printStdErr("Error: \(error.description)\n")
-            exitWithUsage()
+            let (granularity, naming) = try granularityBuilder.makeStrategies(
+                granularity: parsed.single("granularity"), path: path)
+            let reporter = try reporterBuilder.makeReporter(for: parsed.values["reports"])
+            let result = Raker.Arguments(path: path, xcodeBuildArguments: buildArguments,
+                moduleNames: modules, isVerbose: parsed.flags.contains("verbose"),
+                granularityStrategy: granularity, componentNameStrategy: naming,
+                shouldIgnoreExternalDependencies: parsed.flags.contains("ignoreExterns"),
+                reporter: reporter)
+            if result.isVerbose { printStdErr("\(result)") }
+            return result
         } catch {
-            printStdErr("Error: \(error.localizedDescription)\n")
-            exitWithUsage()
+            printStdErr("Error: \(error.localizedDescription)")
+            printUsage()
+            Foundation.exit(1)
         }
     }
-    
-    private func exitWithUsage() -> Never {
-        parser.printUsage(on: stderrStream)
-        exit(1)
+
+    private func parseOptions(_ arguments: [String]) throws -> ParsedOptions {
+        let shortNames = ["w": "workspace", "p": "project", "s": "scheme", "t": "target",
+                          "m": "modules", "g": "granularity", "v": "verbose",
+                          "i": "ignoreExterns", "r": "reports"]
+        let valueOptions = Set(["workspace", "project", "scheme", "target", "modules", "granularity", "reports"])
+        var result = ParsedOptions()
+        var index = 0
+        while index < arguments.count {
+            let raw = arguments[index]
+            guard raw.hasPrefix("-") else { throw CLIError("Unexpected argument \(raw)") }
+            let key = raw.hasPrefix("--") ? String(raw.dropFirst(2)) : shortNames[String(raw.dropFirst())]
+            guard let key else { throw CLIError("Unknown option \(raw)") }
+            if key == "help" { printUsage(); Foundation.exit(0) }
+            if key == "verbose" || key == "ignoreExterns" {
+                result.flags.insert(key); index += 1; continue
+            }
+            guard valueOptions.contains(key) else { throw CLIError("Unknown option \(raw)") }
+            index += 1
+            var values = [String]()
+            while index < arguments.count && !arguments[index].hasPrefix("-") {
+                values.append(arguments[index]); index += 1
+            }
+            guard !values.isEmpty else { throw CLIError("Missing value for \(raw)") }
+            result.values[key, default: []].append(contentsOf: values)
+        }
+        return result
+    }
+
+    private struct CLIError: LocalizedError {
+        let message: String
+        init(_ message: String) { self.message = message }
+        var errorDescription: String? { message }
+    }
+
+    private func printUsage() {
+        printStdErr("""
+        OVERVIEW: A dependency analyser for Swift projects
+        USAGE: muck <options>
+        OPTIONS: --workspace/-w --project/-p --scheme/-s --target/-t --modules/-m
+                 --granularity/-g --reports/-r --verbose/-v --ignoreExterns/-i --help
+        """)
     }
 }
