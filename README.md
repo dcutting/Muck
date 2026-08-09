@@ -105,3 +105,13 @@ Name,FanIn,FanOut,I,Nc,Na,A,D
 "Service",4,8,0.6667,4,2,0.5000,0.1667
 "GroupSelectionFeature",5,8,0.6154,17,4,0.2353,0.1493
 ```
+
+The `I` and `A` columns can be plotted against the Main Sequence (`A = 1 - I`).
+The repository includes a Python script that reads this report from standard input
+and writes a labelled PDF. It requires Python 3 and Matplotlib:
+
+```
+swift run muck --package . --modules MuckCore MuckSourceKit MuckCLI MuckApp \
+  --reports compclean --granularity module | \
+  scripts/main-sequence.py main-sequence.pdf
+```
