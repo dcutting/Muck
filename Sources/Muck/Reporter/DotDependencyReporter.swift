@@ -20,15 +20,23 @@ class DotDependencyReporter: Reporter {
                 return acc.union([edge])
             }
 
-            let dotEdges = edges.map { edge -> String in
+            let dotEdges = edges.sorted { lhs, rhs in
+                (lhs.dst?.description ?? "") < (rhs.dst?.description ?? "")
+            }.map { edge -> String in
                 let srcName = findName(for: edge.src, in: mainSequence)
                 let dstName = findName(for: edge.dst, in: mainSequence)
-                return "  \"\(srcName)\" -> \"\(dstName)\""
+                return "  \"\(escape(srcName))\" -> \"\(escape(dstName))\""
             }
             return dotEdges
         }
         let result = ["digraph {"] + componentEdges.flattened() + ["}"]
         return result.joined(separator: "\n")
+    }
+
+    private func escape(_ name: String) -> String {
+        name.replacingOccurrences(of: "\\", with: "\\\\")
+            .replacingOccurrences(of: "\"", with: "\\\"")
+            .replacingOccurrences(of: "\n", with: "\\n")
     }
 
     private func findName(for componentID: ComponentID?, in mainSequence: MainSequence) -> String {

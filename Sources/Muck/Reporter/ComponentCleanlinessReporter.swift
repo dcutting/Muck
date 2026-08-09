@@ -33,6 +33,7 @@ class ComponentCleanlinessReporter: Reporter {
     private func makeRow(for component: Component) -> String {
         let references = component.references
         let types = component.types
-        return "\"\(component.name)\",\(references.fanIn),\(references.fanOut),\(references.instability.formatted),\(types.numberTypes),\(types.numberAbstracts),\(types.abstractness.formatted),\(component.distance.formatted)"
+        let escapedName = component.name.replacingOccurrences(of: "\"", with: "\"\"")
+        return "\"\(escapedName)\",\(references.fanIn),\(references.fanOut),\(references.instability.formatted),\(types.numberTypes),\(types.numberAbstracts),\(types.abstractness.formatted),\(component.distance.formatted)"
     }
 }
