@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/dcutting/Muck.svg?branch=master)](https://travis-ci.org/dcutting/Muck) [![Coverage Status](https://coveralls.io/repos/github/dcutting/Muck/badge.svg?branch=master)](https://coveralls.io/github/dcutting/Muck?branch=master)
-
 # Muck
 
 Muck analyses dependencies between "components" in your Swift projects.
@@ -9,6 +7,17 @@ Muck analyses dependencies between "components" in your Swift projects.
 You can specify what constitutes a "component" using the granularity option. By default this is `module` meaning each Swift module will be considered a separate component. If you only have a single module (as is common), you can change this to `folder`, `file`, or `type` depending on how organised your source code is.
 
 ## Running Muck
+
+Muck requires Xcode 26 or a compatible Swift 6 toolchain. It is a Swift Package Manager executable; no generated Xcode project is required.
+
+Build and test it with:
+
+```
+swift build
+swift test
+```
+
+Run the command with `swift run muck --help`, or use the included `Makefile` targets.
 
 ```
 OVERVIEW: A dependency analyser for Swift projects
