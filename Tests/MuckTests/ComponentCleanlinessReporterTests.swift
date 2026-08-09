@@ -1,13 +1,15 @@
-import XCTest
+import Testing
 @testable import Muck
 
-class ComponentCleanlinessReporterTests: XCTestCase {
+struct ComponentCleanlinessReporterTests {
 
+    @Test
     func test_name() {
         let sut = ComponentCleanlinessReporter(sortBy: any())
-        XCTAssertEqual("Component Cleanliness", sut.name)
+        #expect(("Component Cleanliness") == (sut.name))
     }
 
+    @Test
     func test_makeReport_sortedByName() {
         let sut = ComponentCleanlinessReporter(sortBy: .name)
         let expected = """
@@ -20,9 +22,10 @@ Name,FanIn,FanOut,I,Nc,Na,A,D
         let mainSequence = MainSequence(components: components, declarations: any())
         let actual = sut.makeReport(for: mainSequence)
 
-        XCTAssertEqual(expected, actual)
+        #expect((expected) == (actual))
     }
 
+    @Test
     func test_makeReport_sortedByDistance() {
         let sut = ComponentCleanlinessReporter(sortBy: .distance)
         let expected = """
@@ -35,6 +38,6 @@ Name,FanIn,FanOut,I,Nc,Na,A,D
         let mainSequence = MainSequence(components: components, declarations: any())
         let actual = sut.makeReport(for: mainSequence)
 
-        XCTAssertEqual(expected, actual)
+        #expect((expected) == (actual))
     }
 }

@@ -1,20 +1,23 @@
-import XCTest
+import Testing
 @testable import Muck
 
-class SystemCleanlinessReporterTests: XCTestCase {
+struct SystemCleanlinessReporterTests {
 
+    @Test
     func test_name() {
         let sut = SystemCleanlinessReporter()
-        XCTAssertEqual("System Cleanliness", sut.name)
+        #expect(("System Cleanliness") == (sut.name))
     }
 
+    @Test
     func test_makeReport_noComponents() {
         let sut = SystemCleanlinessReporter()
         let mainSequence = MainSequence(components: [], declarations: any())
         let actual = sut.makeReport(for: mainSequence)
-        XCTAssertEqual("", actual)
+        #expect(("") == (actual))
     }
 
+    @Test
     func test_makeReport() {
         let sut = SystemCleanlinessReporter()
         let expected = """
@@ -27,6 +30,6 @@ Stddev,0.1980
         let mainSequence = MainSequence(components: components, declarations: any())
         let actual = sut.makeReport(for: mainSequence)
 
-        XCTAssertEqual(expected, actual)
+        #expect((expected) == (actual))
     }
 }

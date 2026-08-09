@@ -1,13 +1,15 @@
-import XCTest
+import Testing
 @testable import Muck
 
-class CompoundReporterTests: XCTestCase {
+struct CompoundReporterTests {
 
+    @Test
     func test_name() {
         let sut = CompoundReporter(reporters: any())
-        XCTAssertEqual("Compound Report", sut.name)
+        #expect(("Compound Report") == (sut.name))
     }
 
+    @Test
     func test_makeReport() {
         let stub1 = StubReporter(name: "Lorax") { mainSequence in
             let componentNames = mainSequence.components.map { $0.name }.joined()
@@ -30,6 +32,6 @@ We can have lots of good fun that is funny: ABCDEF
             Component(componentID: "def", name: "DEF", types: any(), references: any())
             ], declarations: any())
         let actual = sut.makeReport(for: mainSequence)
-        XCTAssertEqual(expected, actual)
+        #expect((expected) == (actual))
     }
 }

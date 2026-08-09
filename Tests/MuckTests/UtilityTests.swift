@@ -1,75 +1,89 @@
-import XCTest
+import Testing
 @testable import Muck
 
-class UtilityTests: XCTestCase {
+struct UtilityTests {
 
+    @Test
     func test_sum_emptySequence_returns0() {
         let input = [Int]()
-        XCTAssertEqual(0, input.sum)
+        #expect((0) == (input.sum))
     }
 
+    @Test
     func test_sum() {
-        XCTAssertEqual(3, [1, -2, 4].sum)
+        #expect([1, -2, 4].sum == 3)
     }
 
+    @Test
     func test_mean_emptyFloatCollection_returnsNil() {
         let input = [Float]()
-        XCTAssertNil(input.mean)
+        #expect((input.mean) == nil)
     }
 
+    @Test
     func test_mean_emptyIntCollection_returnsNil() {
         let input = [Int]()
-        XCTAssertNil(input.mean)
+        #expect((input.mean) == nil)
     }
 
+    @Test
     func test_mean_floatCollection() {
         let input: [Float] = [3.4, 5.3, 9.9]
         let actual: Float = input.mean!
-        XCTAssertEqual(6.2, actual, accuracy: 0.001)
+        #expect(abs((6.2) - (actual)) < 0.001)
     }
 
+    @Test
     func test_mean_doubleCollection() {
         let input: [Double] = [3.4, 5.3, 9.9]
         let actual: Double = input.mean!
-        XCTAssertEqual(6.2, actual, accuracy: 0.001)
+        #expect(abs((6.2) - (actual)) < 0.001)
     }
 
+    @Test
     func test_mean_intCollection() {
         let actual = [3, 4, 6].mean!
-        XCTAssertEqual(4.333, actual, accuracy: 0.001)
+        #expect(abs((4.333) - (actual)) < 0.001)
     }
 
+    @Test
     func test_median_empty_returnsNil() {
         let input = [Int]()
-        XCTAssertNil(input.median)
+        #expect((input.median) == nil)
     }
 
+    @Test
     func test_median_oddCount_returnsMiddleElement() {
         let input = [4, 5, 3]
-        XCTAssertEqual(4, input.median)
+        #expect((4) == (input.median))
     }
 
+    @Test
     func test_median_evenCount_returnsMeanOfMiddleElements() {
         let actual = [4, 5, 3, 9].median!
-        XCTAssertEqual(4.5, actual, accuracy: 0.001)
+        #expect(abs((4.5) - (actual)) < 0.001)
     }
 
+    @Test
     func test_standardDeviation_empty_returnsNil() {
         let input = [Float]()
-        XCTAssertNil(input.standardDeviation)
+        #expect((input.standardDeviation) == nil)
     }
 
+    @Test
     func test_standardDeviation() {
         let input: [Float] = [3.4, 5.3, 9.9]
         let actual = input.standardDeviation!
-        XCTAssertEqual(2.7288581250528, actual, accuracy: 0.00001)
+        #expect(abs((2.7288581250528) - (actual)) < 0.00001)
     }
 
+    @Test
     func test_isEven_oddInput_returnsFalse() {
-        XCTAssertFalse(5.isEven)
+        #expect(!5.isEven)
     }
 
+    @Test
     func test_isEven_evenInput_returnsTrue() {
-        XCTAssertTrue(6.isEven)
+        #expect(6.isEven)
     }
 }

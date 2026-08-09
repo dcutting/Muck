@@ -1,21 +1,19 @@
-import XCTest
+import Testing
 @testable import Muck
 
-class FolderGranularityStrategyTests: XCTestCase {
+struct FolderGranularityStrategyTests {
 
-    var sut: FolderGranularityStrategy!
+    let sut = FolderGranularityStrategy()
 
-    override func setUp() {
-        sut = FolderGranularityStrategy()
-    }
-
-    func test_findComponentID_returnsDeepestPath() {
+    @Test
+    mutating func test_findComponentID_returnsDeepestPath() {
         let path = "/path/to/component/file.swift"
         let declaration = Declaration(kind: any(), path: path, module: any(), name: any(), isAbstract: any(), declarations: any(), references: any())
-        XCTAssertEqual("/path/to/component", sut.findComponentID(for: declaration))
+        #expect(("/path/to/component") == (sut.findComponentID(for: declaration)))
     }
 
-    func test_description() {
-        XCTAssertEqual("treat folders as components", sut.description)
+    @Test
+    mutating func test_description() {
+        #expect(("treat folders as components") == (sut.description))
     }
 }

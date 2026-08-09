@@ -1,19 +1,17 @@
-import XCTest
+import Testing
 @testable import Muck
 
-class IdentityComponentNameStrategyTests: XCTestCase {
+struct IdentityComponentNameStrategyTests {
 
-    var sut: IdentityComponentNameStrategy!
+    let sut = IdentityComponentNameStrategy()
 
-    override func setUp() {
-        sut = IdentityComponentNameStrategy()
+    @Test
+    mutating func test_findComponentName_returnsComponentID() {
+        #expect(("a-component-id") == (sut.findComponentName(for: "a-component-id")))
     }
 
-    func test_findComponentName_returnsComponentID() {
-        XCTAssertEqual("a-component-id", sut.findComponentName(for: "a-component-id"))
-    }
-
-    func test_description() {
-        XCTAssertEqual("use component IDs as names", sut.description)
+    @Test
+    mutating func test_description() {
+        #expect(("use component IDs as names") == (sut.description))
     }
 }

@@ -1,13 +1,15 @@
-import XCTest
+import Testing
 @testable import Muck
 
-class DeclarationReporterTests: XCTestCase {
+struct DeclarationReporterTests {
 
+    @Test
     func test_name() {
         let sut = DeclarationReporter()
-        XCTAssertEqual("Declarations", sut.name)
+        #expect(("Declarations") == (sut.name))
     }
 
+    @Test
     func test_makeReport() {
         let sut = DeclarationReporter()
 
@@ -34,6 +36,6 @@ Lorax
   - Barbaloot
   - SwomeeSwan
 """
-        XCTAssertEqual(expected, actual)
+        #expect((expected) == (actual))
     }
 }
