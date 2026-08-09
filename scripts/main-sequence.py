@@ -18,6 +18,12 @@ def main():
         description="Plot Muck component cleanliness data against the Main Sequence."
     )
     parser.add_argument("output", help="PDF file to create")
+    parser.add_argument(
+        "--labels",
+        type=int,
+        default=12,
+        help="number of furthest-from-sequence components to label (default: 12)",
+    )
     args = parser.parse_args()
 
     try:
@@ -42,8 +48,18 @@ def main():
         instability, abstractness, c=distance, cmap="viridis", s=100,
         edgecolors="black", linewidths=0.5,
     )
-    for row, x, y in zip(rows, instability, abstractness):
-        axes.annotate(row["Name"], (x, y), xytext=(5, 5), textcoords="offset points")
+    labelled_rows = sorted(rows, key=lambda row: float(row["D"]), reverse=True)
+    for row in labelled_rows[:args.labels]:
+        x = float(row["I"])
+        y = float(row["A"])
+        axes.annotate(
+            row["Name"],
+            (x, y),
+            xytext=(5, 5),
+            textcoords="offset points",
+            fontsize=8,
+            bbox={"boxstyle": "round,pad=0.2", "fc": "white", "alpha": 0.75},
+        )
 
     axes.plot([0, 1], [1, 0], "--", color="gray", label="Main Sequence")
     axes.set_xlim(0, 1)
