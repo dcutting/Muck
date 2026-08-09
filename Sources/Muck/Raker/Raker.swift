@@ -2,6 +2,7 @@ class Raker {
 
     struct Arguments {
         let path: String
+        let packagePath: String?
         let xcodeBuildArguments: [String]
         let moduleNames: [String]
         let isVerbose: Bool
@@ -12,7 +13,12 @@ class Raker {
     }
 
     func start(arguments args: Arguments) throws {
-            let finder = SourceKittenFinder(path: args.path, xcodeBuildArguments: args.xcodeBuildArguments, moduleNames: args.moduleNames, isVerbose: args.isVerbose)
+            let finder: Finder
+            if let packagePath = args.packagePath {
+                finder = SourceKittenPackageFinder(path: packagePath, moduleNames: args.moduleNames, isVerbose: args.isVerbose)
+            } else {
+                finder = SourceKittenFinder(path: args.path, xcodeBuildArguments: args.xcodeBuildArguments, moduleNames: args.moduleNames, isVerbose: args.isVerbose)
+            }
             let transformer = Transformer(granularityStrategy: args.granularityStrategy, componentNameStrategy: args.componentNameStrategy, shouldIgnoreExternalDependencies: args.shouldIgnoreExternalDependencies)
 
             let declarations = try finder.find()

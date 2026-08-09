@@ -6,6 +6,7 @@ enum ArgumentsBuilderError: Error, LocalizedError {
     case workspaceAndProjectSpecified
     case missingScheme
     case missingTargetOrScheme
+    case missingPackage
     case noModulesSpecified
     case invalidGranularity(String)
     case unknownReport(String)
@@ -16,6 +17,7 @@ enum ArgumentsBuilderError: Error, LocalizedError {
         case .workspaceAndProjectSpecified: return "Specify only a workspace or project"
         case .missingScheme: return "Missing scheme"
         case .missingTargetOrScheme: return "Missing target or scheme"
+        case .missingPackage: return "Package path does not contain Package.swift"
         case .noModulesSpecified: return "No modules specified for analysis"
         case .invalidGranularity(let name): return "Unknown granularity \(name)"
         case .unknownReport(let name): return "Unknown report \(name)"
@@ -28,6 +30,8 @@ public struct App: ParsableCommand {
 
     @Option(name: [.customLong("workspace"), .customShort("w")], help: "The Xcode workspace")
     var workspace: String?
+    @Option(name: [.customLong("package")], help: "The Swift package directory")
+    var package: String?
     @Option(name: [.customLong("project"), .customShort("p")], help: "The Xcode project")
     var project: String?
     @Option(name: [.customLong("scheme"), .customShort("s")], help: "The Xcode scheme")
@@ -48,17 +52,31 @@ public struct App: ParsableCommand {
     public init() {}
 
     public mutating func validate() throws {
-        guard workspace != nil || project != nil else { throw ValidationError("Specify either --workspace or --project") }
-        guard !(workspace != nil && project != nil) else { throw ValidationError("Specify only one of --workspace or --project") }
+        guard package != nil || workspace != nil || project != nil else { throw ValidationError("Specify --package, --workspace, or --project") }
+        guard [package, workspace, project].compactMap({ $0 }).count == 1 else { throw ValidationError("Specify exactly one of --package, --workspace, or --project") }
+        if let package {
+            guard FileManager.default.fileExists(atPath: URL(fileURLWithPath: package).appendingPathComponent("Package.swift").path) else { throw ValidationError("Package path does not contain Package.swift") }
+            guard scheme == nil && target == nil else { throw ValidationError("--scheme and --target cannot be used with --package") }
+        }
         if workspace != nil && scheme == nil { throw ValidationError("--scheme is required with --workspace") }
         if project != nil && target == nil && scheme == nil { throw ValidationError("--target or --scheme is required with --project") }
         guard !modules.isEmpty else { throw ValidationError("At least one module is required") }
     }
 
     public func run() throws {
-        let (path, buildArguments) = try ProjectArgumentBuilder().parse(workspace: workspace, project: project, scheme: scheme, target: target)
+        let path: String
+        let buildArguments: [String]
+        let packagePath: String?
+        if let package {
+            path = URL(fileURLWithPath: package).standardizedFileURL.path
+            buildArguments = []
+            packagePath = path
+        } else {
+            (path, buildArguments) = try ProjectArgumentBuilder().parse(workspace: workspace, project: project, scheme: scheme, target: target)
+            packagePath = nil
+        }
         let (granularityStrategy, componentNameStrategy) = try GranularityArgumentBuilder().makeStrategies(granularity: granularity, path: path)
         let reporter = try ReporterArgumentBuilder().makeReporter(for: reports.isEmpty ? nil : reports)
-        try Raker().start(arguments: Raker.Arguments(path: path, xcodeBuildArguments: buildArguments, moduleNames: modules, isVerbose: verbose, granularityStrategy: granularityStrategy, componentNameStrategy: componentNameStrategy, shouldIgnoreExternalDependencies: ignoreExterns, reporter: reporter))
+        try Raker().start(arguments: Raker.Arguments(path: path, packagePath: packagePath, xcodeBuildArguments: buildArguments, moduleNames: modules, isVerbose: verbose, granularityStrategy: granularityStrategy, componentNameStrategy: componentNameStrategy, shouldIgnoreExternalDependencies: ignoreExterns, reporter: reporter))
     }
 }

@@ -4,11 +4,13 @@ import SourceKittenFramework
 enum SourceKittenFinderError: Error, LocalizedError {
     case path(String)
     case build(name: String)
+    case packageBuild
 
     var errorDescription: String? {
         switch self {
         case .path(let path): return "\(path) does not exist"
         case .build(let name): return "Could not build the requested Xcode target or find module \(name)"
+        case .packageBuild: return "Could not build the Swift package"
         }
     }
 }

@@ -30,7 +30,8 @@ OPTIONS:
   --ignoreExterns, -i
                     Ignore dependencies external to specified modules
   --modules, -m     The modules to analyse (required)
-  --project, -p     The Xcode project (specify either workspace or project but not both)
+  --package         The Swift package directory
+  --project, -p     The Xcode project (specify either package, workspace or project but not more than one)
   --reports, -r     One or more reports to produce on stdout [decl|dep|dotdep|compclean|sysclean] (defaults to all)
   --scheme, -s      The Xcode scheme (required if workspace is specified)
   --target, -t      The Xcode target (permitted if project is specified)
@@ -39,7 +40,7 @@ OPTIONS:
   --help            Display available options
 ```
 
-You need to provide an Xcode workspace or project and the scheme you want to build for analysis. You also need to provide the list of Swift modules making up your project. In simple cases where you're building everything into a single app, this will probably just be the name of your app, but in cases where you have divided your code into separate frameworks, you'll need to include the names of those too.
+You need to provide a Swift package directory, or an Xcode workspace/project and scheme, for analysis. You also need to provide the list of Swift modules making up your project. In simple cases where you're building everything into a single app, this will probably just be the name of your app, but in cases where you have divided your code into separate frameworks, you'll need to include the names of those too.
 
 Muck will then build your project and output some reports.
 
@@ -49,6 +50,14 @@ Muck will then build your project and output some reports.
 
 ```
 muck -p MyApp.xcodeproj -s MyApp -m MyApp -i -g folder
+```
+
+**You've got a Swift package**
+
+Muck builds the package with SwiftPM and reads the compiler arguments from its build record:
+
+```
+muck --package . --modules Muck MuckApp -i -g module
 ```
 
 **You have all your code in one folder**
