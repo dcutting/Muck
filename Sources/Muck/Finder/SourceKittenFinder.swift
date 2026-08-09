@@ -1,27 +1,34 @@
 import Foundation
 import SourceKittenFramework
 
-enum SourceKittenFinderError: Error {
+enum SourceKittenFinderError: Error, LocalizedError {
     case path(String)
     case build(name: String)
+
+    var errorDescription: String? {
+        switch self {
+        case .path(let path): return "\(path) does not exist"
+        case .build(let name): return "Could not build the requested Xcode target or find module \(name)"
+        }
+    }
 }
 
 class SourceKittenFinder: Finder {
 
-    private let rootPath: String
+    private let rootURL: URL
     private let xcodeBuildArguments: [String]
     private let moduleNames: [String]
     private let isVerbose: Bool
 
     init(path: String, xcodeBuildArguments: [String], moduleNames: [String], isVerbose: Bool) {
-        self.rootPath = path
+        self.rootURL = URL(fileURLWithPath: path).standardizedFileURL
         self.xcodeBuildArguments = xcodeBuildArguments
         self.moduleNames = moduleNames
         self.isVerbose = isVerbose
     }
 
     func find() throws -> [Declaration] {
-        return try analyse(path: rootPath, xcodeBuildArguments: xcodeBuildArguments, moduleNames: moduleNames)
+        return try analyse(path: rootURL.path, xcodeBuildArguments: xcodeBuildArguments, moduleNames: moduleNames)
     }
 
     private func analyse(path: String, xcodeBuildArguments: [String], moduleNames: [String]) throws -> [Declaration] {
@@ -32,10 +39,11 @@ class SourceKittenFinder: Finder {
 
     private func analyse(path: String, xcodeBuildArguments: [String], moduleName: String) throws -> [Declaration] {
 
-        guard FileManager.default.fileExists(atPath: path) else {
+        let projectURL = URL(fileURLWithPath: path).standardizedFileURL
+        guard FileManager.default.fileExists(atPath: projectURL.path) else {
             throw SourceKittenFinderError.path(path)
         }
-        guard let module = Module(xcodeBuildArguments: xcodeBuildArguments, name: moduleName, inPath: path) else {
+        guard let module = Module(xcodeBuildArguments: xcodeBuildArguments, name: moduleName, inPath: projectURL.path) else {
             throw SourceKittenFinderError.build(name: moduleName)
         }
 
@@ -51,8 +59,13 @@ class SourceKittenFinder: Finder {
         let sourceKitOutput = try Request.index(file: path, arguments: arguments).send()
         let sourceKitEntities = findSourceKitEntities(in: sourceKitOutput)
         let (declarations, references) = extractDeclarationsAndReferences(from: sourceKitEntities, path: path, module: module)
-        let name = path.strip(prefix: rootPath, suffix: ".swift")
+        let name = relativeName(for: URL(fileURLWithPath: path).standardizedFileURL)
         return Declaration(kind: .file, path: path, module: module, name: name, isAbstract: false, declarations: declarations, references: references)
+    }
+
+    private func relativeName(for fileURL: URL) -> String {
+        let rootPath = rootURL.path.hasSuffix("/") ? rootURL.path : rootURL.path + "/"
+        return fileURL.path.strip(prefix: rootPath, suffix: ".swift")
     }
 
     private func findSourceKitEntities(in sourceKitOutput: [String: SourceKitRepresentable]) -> [[String: SourceKitRepresentable]] {
