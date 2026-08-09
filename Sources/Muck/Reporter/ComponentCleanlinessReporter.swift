@@ -1,21 +1,21 @@
-class ComponentCleanlinessReporter: Reporter {
+public class ComponentCleanlinessReporter: Reporter {
 
-    enum SortBy {
+    public enum SortBy {
         case name
         case distance
     }
 
     private let sortBy: SortBy
 
-    var name: String {
+    public var name: String {
         return "Component Cleanliness"
     }
 
-    init(sortBy: SortBy) {
+    public init(sortBy: SortBy) {
         self.sortBy = sortBy
     }
 
-    func makeReport(for mainSequence: MainSequence) -> String {
+    public func makeReport(for mainSequence: MainSequence) -> String {
         let components = mainSequence.components.sorted {
             switch sortBy {
             case .name:

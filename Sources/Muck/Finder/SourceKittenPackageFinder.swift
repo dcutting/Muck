@@ -1,18 +1,19 @@
 import Foundation
+import MuckCore
 import SourceKittenFramework
 
-final class SourceKittenPackageFinder: Finder {
+public final class SourceKittenPackageFinder: Finder {
     private let packageURL: URL
     private let moduleNames: [String]
     private let isVerbose: Bool
 
-    init(path: String, moduleNames: [String], isVerbose: Bool) {
+    public init(path: String, moduleNames: [String], isVerbose: Bool) {
         packageURL = URL(fileURLWithPath: path).standardizedFileURL
         self.moduleNames = moduleNames
         self.isVerbose = isVerbose
     }
 
-    func find() throws -> [Declaration] {
+    public func find() throws -> [Declaration] {
         guard FileManager.default.fileExists(atPath: packageURL.appendingPathComponent("Package.swift").path) else {
             throw SourceKittenFinderError.path(packageURL.path)
         }
@@ -42,7 +43,7 @@ final class SourceKittenPackageFinder: Finder {
     private func buildPackage() -> Bool {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/env")
-        process.arguments = ["swift", "build"]
+        process.arguments = ["swift", "build", "--build-system", "native"]
         process.currentDirectoryURL = packageURL
         process.standardOutput = FileHandle.standardError
         process.standardError = FileHandle.standardError

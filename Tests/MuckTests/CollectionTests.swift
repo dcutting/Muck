@@ -1,5 +1,7 @@
 import Testing
-@testable import Muck
+@testable import MuckCore
+@testable import MuckSourceKit
+@testable import MuckCLI
 
 struct CollectionTests {
 

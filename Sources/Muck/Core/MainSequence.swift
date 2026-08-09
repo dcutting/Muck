@@ -1,10 +1,15 @@
-struct MainSequence {
+public struct MainSequence {
 
-    let components: [Component]
-    let declarations: [Declaration]
+    public let components: [Component]
+    public let declarations: [Declaration]
+
+    public init(components: [Component], declarations: [Declaration]) {
+        self.components = components
+        self.declarations = declarations
+    }
 }
 
-extension MainSequence {
+public extension MainSequence {
 
     var mean: Double? {
         return distances.mean
@@ -23,7 +28,7 @@ extension MainSequence {
     }
 }
 
-extension Component {
+public extension Component {
     var distance: Double {
         return (references.instability + types.abstractness - 1).magnitude
     }

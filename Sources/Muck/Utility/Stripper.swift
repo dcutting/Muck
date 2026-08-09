@@ -1,4 +1,4 @@
-extension String {
+public extension String {
     func strip(prefix: String, suffix: String) -> String {
         var result = self
         if result.hasPrefix(prefix) {

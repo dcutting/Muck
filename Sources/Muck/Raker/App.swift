@@ -1,5 +1,7 @@
 import ArgumentParser
 import Foundation
+import MuckCore
+import MuckSourceKit
 
 enum ArgumentsBuilderError: Error, LocalizedError {
     case needWorkspaceOrProject

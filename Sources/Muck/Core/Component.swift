@@ -1,8 +1,8 @@
-typealias ComponentID = String
+public typealias ComponentID = String
 
-struct Component {
-    let componentID: ComponentID
-    let name: String
-    var types: Types
-    var references: References
+public struct Component {
+    public let componentID: ComponentID
+    public let name: String
+    public var types: Types
+    public var references: References
 }

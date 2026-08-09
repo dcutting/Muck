@@ -1,20 +1,20 @@
-class CompoundReporter: Reporter, CustomStringConvertible {
+public class CompoundReporter: Reporter, CustomStringConvertible {
 
     private let reporters: [Reporter]
 
-    var name: String {
+    public var name: String {
         return "Compound Report"
     }
 
-    var description: String {
+    public var description: String {
         return reporters.map { "\($0)" }.joined(separator: ", ")
     }
 
-    init(reporters: [Reporter]) {
+    public init(reporters: [Reporter]) {
         self.reporters = reporters
     }
 
-    func makeReport(for mainSequence: MainSequence) -> String {
+    public func makeReport(for mainSequence: MainSequence) -> String {
         let maker = reporters.count == 1 ? makeSansName : makeWithName
         return reporters.map { maker(mainSequence, $0) }.joined(separator: "\n-----\n")
     }

@@ -1,13 +1,15 @@
 import Foundation
 
-class FolderGranularityStrategy: GranularityStrategy {
+public class FolderGranularityStrategy: GranularityStrategy {
 
-    func findComponentID(for declaration: Declaration) -> ComponentID {
+    public init() {}
+
+    public func findComponentID(for declaration: Declaration) -> ComponentID {
         let url = URL(fileURLWithPath: declaration.path)
         return url.deletingLastPathComponent().relativePath
     }
 
-    var description: String {
+    public var description: String {
         return "treat folders as components"
     }
 }

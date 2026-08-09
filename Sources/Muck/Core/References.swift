@@ -1,23 +1,23 @@
-struct Dependency: Hashable {
+public struct Dependency: Hashable {
 
-    let componentID: ComponentID?
-    let declarationID: DeclarationID
+    public let componentID: ComponentID?
+    public let declarationID: DeclarationID
 }
 
-struct References {
+public struct References {
 
     private var dependents = Set<Dependency>()
-    var dependencies = Set<Dependency>()
+    public var dependencies = Set<Dependency>()
 
-    var fanIn: Int {
+    public var fanIn: Int {
         return dependents.count
     }
 
-    var fanOut: Int {
+    public var fanOut: Int {
         return dependencies.count
     }
 
-    var instability: Double {
+    public var instability: Double {
         let fanTotal = fanIn + fanOut
         guard fanTotal > 0 else { return 0.0 }
         return Double(fanOut) / Double(fanTotal)

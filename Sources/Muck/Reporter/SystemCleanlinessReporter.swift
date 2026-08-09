@@ -1,10 +1,12 @@
-class SystemCleanlinessReporter: Reporter {
+public class SystemCleanlinessReporter: Reporter {
 
-    var name: String {
+    public init() {}
+
+    public var name: String {
         return "System Cleanliness"
     }
 
-    func makeReport(for mainSequence: MainSequence) -> String {
+    public func makeReport(for mainSequence: MainSequence) -> String {
         guard
             let mean = mainSequence.mean,
             let median = mainSequence.median,

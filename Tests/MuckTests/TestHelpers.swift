@@ -1,5 +1,7 @@
 import Foundation
-@testable import Muck
+@testable import MuckCore
+@testable import MuckSourceKit
+@testable import MuckCLI
 
 func any() -> String {
     return "dummy"

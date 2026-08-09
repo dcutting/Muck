@@ -1,17 +1,17 @@
-struct Types {
+public struct Types {
 
-    var abstracts = [DeclarationID]()
-    var concretes = [DeclarationID]()
+    public var abstracts = [DeclarationID]()
+    public var concretes = [DeclarationID]()
 
-    var numberTypes: Int {
+    public var numberTypes: Int {
         return numberAbstracts + concretes.count
     }
 
-    var numberAbstracts: Int {
+    public var numberAbstracts: Int {
         return abstracts.count
     }
 
-    var abstractness: Double {
+    public var abstractness: Double {
         precondition(numberTypes >= numberAbstracts, "numberTypes < numberAbstracts")
         guard numberTypes > 0 else { return 1.0 }
         return Double(numberAbstracts) / Double(numberTypes)

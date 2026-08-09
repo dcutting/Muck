@@ -1,10 +1,12 @@
-class FileGranularityStrategy: GranularityStrategy {
+public class FileGranularityStrategy: GranularityStrategy {
 
-    func findComponentID(for declaration: Declaration) -> ComponentID {
+    public init() {}
+
+    public func findComponentID(for declaration: Declaration) -> ComponentID {
         return declaration.path
     }
 
-    var description: String {
+    public var description: String {
         return "treat files as components"
     }
 }

@@ -44,3 +44,4 @@ class GranularityArgumentBuilder {
         return StrippedComponentNameStrategy(prefix: path, suffix: ".swift")
     }
 }
+import MuckCore

@@ -1,16 +1,18 @@
 private struct Edge: Hashable {
 
-    let src: ComponentID
-    let dst: ComponentID?
+    public let src: ComponentID
+    public let dst: ComponentID?
 }
 
-class DotDependencyReporter: Reporter {
+public class DotDependencyReporter: Reporter {
 
-    var name: String {
+    public init() {}
+
+    public var name: String {
         return "Dot Dependencies"
     }
 
-    func makeReport(for mainSequence: MainSequence) -> String {
+    public func makeReport(for mainSequence: MainSequence) -> String {
 
         let components = mainSequence.components.sorted { $0.name < $1.name }
         let componentEdges = components.map { component -> [String] in

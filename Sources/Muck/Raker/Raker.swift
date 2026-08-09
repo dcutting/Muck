@@ -29,3 +29,5 @@ class Raker {
 
     }
 }
+import MuckCore
+import MuckSourceKit

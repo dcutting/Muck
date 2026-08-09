@@ -1,10 +1,10 @@
 import Foundation
 
-func printStdErr(_ message: String) {
+public func printStdErr(_ message: String) {
     FileHandle.standardError.write(Data((message + "\n").utf8))
 }
 
-extension Double {
+public extension Double {
     var formatted: String {
         return String(format: "%.4f", self)
     }

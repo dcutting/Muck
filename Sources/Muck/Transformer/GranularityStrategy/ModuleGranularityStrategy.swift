@@ -1,10 +1,12 @@
-class ModuleGranularityStrategy: GranularityStrategy {
+public class ModuleGranularityStrategy: GranularityStrategy {
 
-    func findComponentID(for declaration: Declaration) -> ComponentID {
+    public init() {}
+
+    public func findComponentID(for declaration: Declaration) -> ComponentID {
         return declaration.module
     }
 
-    var description: String {
+    public var description: String {
         return "treat modules as components"
     }
 }

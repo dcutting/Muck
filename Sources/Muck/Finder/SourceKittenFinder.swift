@@ -1,12 +1,13 @@
 import Foundation
+import MuckCore
 import SourceKittenFramework
 
-enum SourceKittenFinderError: Error, LocalizedError {
+public enum SourceKittenFinderError: Error, LocalizedError {
     case path(String)
     case build(name: String)
     case packageBuild
 
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         case .path(let path): return "\(path) does not exist"
         case .build(let name): return "Could not build the requested Xcode target or find module \(name)"
@@ -15,21 +16,21 @@ enum SourceKittenFinderError: Error, LocalizedError {
     }
 }
 
-class SourceKittenFinder: Finder {
+public final class SourceKittenFinder: Finder {
 
     private let rootURL: URL
     private let xcodeBuildArguments: [String]
     private let moduleNames: [String]
     private let isVerbose: Bool
 
-    init(path: String, xcodeBuildArguments: [String], moduleNames: [String], isVerbose: Bool) {
+    public init(path: String, xcodeBuildArguments: [String], moduleNames: [String], isVerbose: Bool) {
         self.rootURL = URL(fileURLWithPath: path).standardizedFileURL
         self.xcodeBuildArguments = xcodeBuildArguments
         self.moduleNames = moduleNames
         self.isVerbose = isVerbose
     }
 
-    func find() throws -> [Declaration] {
+    public func find() throws -> [Declaration] {
         return try analyse(path: rootURL.path, xcodeBuildArguments: xcodeBuildArguments, moduleNames: moduleNames)
     }
 

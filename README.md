@@ -19,6 +19,16 @@ swift test
 
 Run the command with `swift run muck --help`, or use the included `Makefile` targets.
 
+## Architecture
+
+Muck is split into targets with dependencies pointing toward the analysis core:
+
+```
+MuckApp -> MuckCLI -> MuckSourceKit -> MuckCore
+```
+
+`MuckCore` contains the dependency model, cleanliness metrics, transformations, and reports. `MuckSourceKit` adapts Xcode and Swift Package Manager compiler information into declarations. `MuckCLI` parses arguments and coordinates analysis, while `MuckApp` is only the executable entry point.
+
 ```
 OVERVIEW: A dependency analyser for Swift projects
 

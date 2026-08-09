@@ -19,18 +19,29 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .executableTarget(
             name: "MuckApp",
-            dependencies: [
-                "Muck",
-                .product(name: "ArgumentParser", package: "swift-argument-parser")
-            ]),
+            dependencies: ["MuckCLI"]),
         .target(
-            name: "Muck",
+            name: "MuckCore",
+            path: "Sources/Muck",
+            exclude: ["Finder", "Raker"],
+            sources: ["Core", "Reporter", "Transformer", "Utility"]),
+        .target(
+            name: "MuckSourceKit",
             dependencies: [
-                .product(name: "SourceKittenFramework", package: "SourceKitten"),
+                "MuckCore",
+                .product(name: "SourceKittenFramework", package: "SourceKitten")
+            ],
+            path: "Sources/Muck/Finder"),
+        .target(
+            name: "MuckCLI",
+            dependencies: [
+                "MuckCore",
+                "MuckSourceKit",
                 .product(name: "ArgumentParser", package: "swift-argument-parser")
-            ]),
+            ],
+            path: "Sources/Muck/Raker"),
         .testTarget(
             name: "MuckTests",
-            dependencies: ["Muck"]),
+            dependencies: ["MuckCore", "MuckSourceKit", "MuckCLI"]),
     ]
 )

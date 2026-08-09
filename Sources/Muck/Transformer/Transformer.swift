@@ -1,6 +1,6 @@
 import Foundation
 
-class Transformer {
+public class Transformer {
 
     private let granularityStrategy: GranularityStrategy
     private let componentNameStrategy: ComponentNameStrategy
@@ -9,13 +9,13 @@ class Transformer {
     private var declarationIndex = [DeclarationID: ComponentID]()
     private var components = [ComponentID: Component]()
 
-    init(granularityStrategy: GranularityStrategy, componentNameStrategy: ComponentNameStrategy, shouldIgnoreExternalDependencies: Bool) {
+    public init(granularityStrategy: GranularityStrategy, componentNameStrategy: ComponentNameStrategy, shouldIgnoreExternalDependencies: Bool) {
         self.granularityStrategy = granularityStrategy
         self.componentNameStrategy = componentNameStrategy
         self.shouldIgnoreExternalDependencies = shouldIgnoreExternalDependencies
     }
 
-    func transform(declarations: [Declaration]) -> [Component] {
+    public func transform(declarations: [Declaration]) -> [Component] {
         reset()
         declarations.forEach(index)
         declarations.forEach(analyseAbstractness)

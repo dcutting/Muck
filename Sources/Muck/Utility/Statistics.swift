@@ -1,24 +1,24 @@
-extension Sequence where Element: Numeric {
+public extension Sequence where Element: Numeric {
     var sum: Element {
         return reduce(0, +)
     }
 }
 
-extension Collection where Element: FloatingPoint {
+public extension Collection where Element: FloatingPoint {
     var mean: Element? {
         guard !isEmpty else { return nil }
         return sum / Element(count)
     }
 }
 
-extension Collection where Element: DoubleConvertible, Element: BinaryInteger {
+public extension Collection where Element: DoubleConvertible, Element: BinaryInteger {
     var mean: Double? {
         guard !isEmpty else { return nil }
         return sum.asDouble() / count.asDouble()
     }
 }
 
-extension Collection where Element: DoubleConvertible, Element: Comparable {
+public extension Collection where Element: DoubleConvertible, Element: Comparable {
     var median: Double? {
         guard !isEmpty else { return nil }
         let sortedElements = sorted()
@@ -31,7 +31,7 @@ extension Collection where Element: DoubleConvertible, Element: Comparable {
     }
 }
 
-extension Collection where Element: FloatingPoint {
+public extension Collection where Element: FloatingPoint {
     var standardDeviation: Element? {
         guard let m = self.mean else { return nil }
         let diffSqs = map { ($0 - m) * ($0 - m) }
@@ -39,7 +39,7 @@ extension Collection where Element: FloatingPoint {
     }
 }
 
-extension Int {
+public extension Int {
     var isEven: Bool {
         return self % 2 == 0
     }

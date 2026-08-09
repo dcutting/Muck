@@ -1,21 +1,32 @@
-typealias DeclarationID = String
+public typealias DeclarationID = String
 
-enum DeclarationKind {
+public enum DeclarationKind {
     case declaration(DeclarationID)
     case file
 }
 
-struct Declaration {
-    let kind: DeclarationKind
-    let path: String
-    let module: String
-    let name: String
-    let isAbstract: Bool
-    let declarations: [Declaration]
-    let references: [DeclarationID]
+public struct Declaration {
+    public let kind: DeclarationKind
+    public let path: String
+    public let module: String
+    public let name: String
+    public let isAbstract: Bool
+    public let declarations: [Declaration]
+    public let references: [DeclarationID]
+
+    public init(kind: DeclarationKind, path: String, module: String, name: String,
+                isAbstract: Bool, declarations: [Declaration], references: [DeclarationID]) {
+        self.kind = kind
+        self.path = path
+        self.module = module
+        self.name = name
+        self.isAbstract = isAbstract
+        self.declarations = declarations
+        self.references = references
+    }
 }
 
-extension Array where Element == Declaration {
+public extension Array where Element == Declaration {
 
     func findName(for declarationID: DeclarationID) -> String {
         let declaration = findDeclaration(for: declarationID)
