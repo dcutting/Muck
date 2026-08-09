@@ -11,9 +11,7 @@ class Raker {
         let reporter: Reporter
     }
 
-    func start(arguments args: Arguments) {
-
-        do {
+    func start(arguments args: Arguments) throws {
             let finder = SourceKittenFinder(path: args.path, xcodeBuildArguments: args.xcodeBuildArguments, moduleNames: args.moduleNames, isVerbose: args.isVerbose)
             let transformer = Transformer(granularityStrategy: args.granularityStrategy, componentNameStrategy: args.componentNameStrategy, shouldIgnoreExternalDependencies: args.shouldIgnoreExternalDependencies)
 
@@ -23,12 +21,5 @@ class Raker {
             let report = args.reporter.makeReport(for: mainSequence)
             print(report)
 
-        } catch SourceKittenFinderError.build(let name) {
-            printStdErr("Error: Could not build specified workspace/scheme or project/scheme/target, or could not find module \(name)")
-        } catch SourceKittenFinderError.path(let path) {
-            printStdErr("Error: \(path) does not exist")
-        } catch {
-            printStdErr(error.localizedDescription)
-        }
     }
 }
