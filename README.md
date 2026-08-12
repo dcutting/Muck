@@ -19,6 +19,13 @@ swift test
 
 Run the command with `swift run muck --help`, or use the included `Makefile` targets.
 
+Muck caches SourceKitten's file indexing results in the user's cache directory. A
+cached result is reused only when the project, module, project-relative file path,
+source contents, compiler arguments, and Swift toolchain all match. This means a
+refactoring run re-indexes changed files while reusing unchanged files, and moving
+a file still produces the correct folder or file granularity report. Set
+`MUCK_CACHE_DIRECTORY` to use a different cache location.
+
 ## Architecture
 
 Muck is split into targets with dependencies pointing toward the analysis core:

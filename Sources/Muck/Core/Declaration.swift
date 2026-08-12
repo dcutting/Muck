@@ -1,11 +1,42 @@
 public typealias DeclarationID = String
 
-public enum DeclarationKind {
+public enum DeclarationKind: Codable {
     case declaration(DeclarationID)
     case file
+
+    private enum CodingKeys: String, CodingKey {
+        case kind
+        case id
+    }
+
+    private enum Kind: String, Codable {
+        case declaration
+        case file
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        switch try container.decode(Kind.self, forKey: .kind) {
+        case .declaration:
+            self = .declaration(try container.decode(DeclarationID.self, forKey: .id))
+        case .file:
+            self = .file
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        switch self {
+        case .declaration(let id):
+            try container.encode(Kind.declaration, forKey: .kind)
+            try container.encode(id, forKey: .id)
+        case .file:
+            try container.encode(Kind.file, forKey: .kind)
+        }
+    }
 }
 
-public struct Declaration {
+public struct Declaration: Codable {
     public let kind: DeclarationKind
     public let path: String
     public let module: String

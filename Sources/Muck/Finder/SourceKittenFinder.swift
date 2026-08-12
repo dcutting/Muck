@@ -22,12 +22,15 @@ public final class SourceKittenFinder: Finder {
     private let xcodeBuildArguments: [String]
     private let moduleNames: [String]
     private let isVerbose: Bool
+    private let indexCache: SourceKittenIndexCache
 
     public init(path: String, xcodeBuildArguments: [String], moduleNames: [String], isVerbose: Bool) {
-        self.rootURL = URL(fileURLWithPath: path).standardizedFileURL
+        let rootURL = URL(fileURLWithPath: path).standardizedFileURL
+        self.rootURL = rootURL
         self.xcodeBuildArguments = xcodeBuildArguments
         self.moduleNames = moduleNames
         self.isVerbose = isVerbose
+        self.indexCache = SourceKittenIndexCache(projectURL: rootURL)
     }
 
     public func find() throws -> [Declaration] {
@@ -59,11 +62,13 @@ public final class SourceKittenFinder: Finder {
     }
 
     private func makeFileDeclaration(for path: String, module: String, arguments: [String]) throws -> Declaration {
-        let sourceKitOutput = try Request.index(file: path, arguments: arguments).send()
-        let sourceKitEntities = findSourceKitEntities(in: sourceKitOutput)
-        let (declarations, references) = extractDeclarationsAndReferences(from: sourceKitEntities, path: path, module: module)
-        let name = relativeName(for: URL(fileURLWithPath: path).standardizedFileURL)
-        return Declaration(kind: .file, path: path, module: module, name: name, isAbstract: false, declarations: declarations, references: references)
+        return try indexCache.declaration(for: path, module: module, compilerArguments: arguments) {
+            let sourceKitOutput = try Request.index(file: path, arguments: arguments).send()
+            let sourceKitEntities = findSourceKitEntities(in: sourceKitOutput)
+            let (declarations, references) = extractDeclarationsAndReferences(from: sourceKitEntities, path: path, module: module)
+            let name = relativeName(for: URL(fileURLWithPath: path).standardizedFileURL)
+            return Declaration(kind: .file, path: path, module: module, name: name, isAbstract: false, declarations: declarations, references: references)
+        }
     }
 
     private func relativeName(for fileURL: URL) -> String {

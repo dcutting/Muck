@@ -6,11 +6,13 @@ public final class SourceKittenPackageFinder: Finder {
     private let packageURL: URL
     private let moduleNames: [String]
     private let isVerbose: Bool
+    private let indexCache: SourceKittenIndexCache
 
     public init(path: String, moduleNames: [String], isVerbose: Bool) {
         packageURL = URL(fileURLWithPath: path).standardizedFileURL
         self.moduleNames = moduleNames
         self.isVerbose = isVerbose
+        indexCache = SourceKittenIndexCache(projectURL: packageURL)
     }
 
     public func find() throws -> [Declaration] {
@@ -25,18 +27,25 @@ public final class SourceKittenPackageFinder: Finder {
                 throw SourceKittenFinderError.build(name: moduleName)
             }
             log("Analysing Swift package module \(module.name)")
-            return try module.sourceFiles.map { file in
-                log("  - \(file)")
-                let output = try Request.index(file: file, arguments: module.compilerArguments).send()
+            return try module.sourceFiles.map { try makeFileDeclaration(for: $0, module: module) }
+        }.flattened()
+    }
+
+    private func makeFileDeclaration(for path: String, module: Module) throws -> Declaration {
+        log("  - \(path)")
+        return try indexCache.declaration(
+            for: path,
+            module: module.name,
+            compilerArguments: module.compilerArguments) {
+                let output = try Request.index(file: path, arguments: module.compilerArguments).send()
                 let entities = findSourceKitEntities(in: output)
                 let (declarations, references) = extractDeclarationsAndReferences(
-                    from: entities, path: file, module: module.name)
-                let name = URL(fileURLWithPath: file).standardizedFileURL.path
+                    from: entities, path: path, module: module.name)
+                let name = URL(fileURLWithPath: path).standardizedFileURL.path
                     .strip(prefix: packageURL.path + "/", suffix: ".swift")
-                return Declaration(kind: .file, path: file, module: module.name, name: name,
+                return Declaration(kind: .file, path: path, module: module.name, name: name,
                                    isAbstract: false, declarations: declarations, references: references)
             }
-        }.flattened()
     }
 
     private func buildPackage() -> Bool {
