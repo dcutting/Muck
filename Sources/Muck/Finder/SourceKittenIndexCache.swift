@@ -3,13 +3,12 @@ import Foundation
 import MuckCore
 
 final class SourceKittenIndexCache {
-    private static let schemaVersion = 1
+    private static let schemaVersion = 2
     private static let cacheDirectoryEnvironmentVariable = "MUCK_CACHE_DIRECTORY"
 
     private struct CacheKey: Codable, Equatable {
         let schemaVersion: Int
         let projectPath: String
-        let relativePath: String
         let module: String
         let sourceHash: String
         let compilerArgumentsHash: String
@@ -56,7 +55,7 @@ final class SourceKittenIndexCache {
             return nil
         }
         guard entry.key == key else { return nil }
-        return entry.declaration
+        return rebase(entry.declaration, to: path)
     }
 
     func store(
@@ -85,33 +84,66 @@ final class SourceKittenIndexCache {
     private func makeKey(for path: String, module: String, compilerArguments: [String]) -> CacheKey? {
         let fileURL = Self.canonicalURL(URL(fileURLWithPath: path, relativeTo: projectURL))
         guard let source = try? Data(contentsOf: fileURL),
-              let arguments = try? JSONEncoder().encode(compilerArguments) else {
+              let arguments = try? JSONEncoder().encode(
+                  normalizedCompilerArguments(compilerArguments)) else {
             return nil
         }
 
         return CacheKey(
             schemaVersion: Self.schemaVersion,
             projectPath: projectURL.path,
-            relativePath: relativePath(for: fileURL),
             module: module,
             sourceHash: Self.hash(source),
             compilerArgumentsHash: Self.hash(arguments),
             toolchainIdentifier: toolchainIdentifier)
     }
 
-    private func relativePath(for fileURL: URL) -> String {
-        let rootPath = projectURL.path.hasSuffix("/") ? projectURL.path : projectURL.path + "/"
-        guard fileURL.path.hasPrefix(rootPath) else {
-            return fileURL.path
+    private func normalizedCompilerArguments(_ arguments: [String]) -> [String] {
+        var normalizedArguments = [String]()
+        var sourceHashes = [String]()
+
+        for argument in arguments {
+            let argumentURL = Self.canonicalURL(URL(fileURLWithPath: argument, relativeTo: projectURL))
+            guard argumentURL.pathExtension == "swift",
+                  let source = try? Data(contentsOf: argumentURL) else {
+                normalizedArguments.append(argument)
+                continue
+            }
+            sourceHashes.append(Self.hash(source))
         }
-        return String(fileURL.path.dropFirst(rootPath.count))
+
+        normalizedArguments.append(contentsOf: sourceHashes.sorted().map { "<swift-source:\($0)>" })
+        return normalizedArguments
+    }
+
+    private func rebase(_ declaration: Declaration, to path: String) -> Declaration {
+        let fileURL = Self.canonicalURL(URL(fileURLWithPath: path, relativeTo: projectURL))
+        let name: String
+        if case .file = declaration.kind {
+            name = relativeName(for: fileURL)
+        } else {
+            name = declaration.name
+        }
+
+        return Declaration(
+            kind: declaration.kind,
+            path: fileURL.path,
+            module: declaration.module,
+            name: name,
+            isAbstract: declaration.isAbstract,
+            declarations: declaration.declarations.map { rebase($0, to: fileURL.path) },
+            references: declaration.references)
+    }
+
+    private func relativeName(for fileURL: URL) -> String {
+        let rootPath = projectURL.path.hasSuffix("/") ? projectURL.path : projectURL.path + "/"
+        return fileURL.path.strip(prefix: rootPath, suffix: ".swift")
     }
 
     private func cacheURL(for key: CacheKey) -> URL? {
         let canonicalKey = [
             String(key.schemaVersion),
             key.projectPath,
-            key.relativePath,
             key.module,
             key.sourceHash,
             key.compilerArgumentsHash,
