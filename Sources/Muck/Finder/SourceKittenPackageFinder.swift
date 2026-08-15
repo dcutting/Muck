@@ -51,7 +51,7 @@ public final class SourceKittenPackageFinder: Finder {
     private func buildPackage() -> Bool {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/env")
-        process.arguments = ["swift", "build"]
+        process.arguments = ["swift", "build", "--build-system", "native"]
         process.currentDirectoryURL = packageURL
         process.standardOutput = FileHandle.standardError
         process.standardError = FileHandle.standardError
